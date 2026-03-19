@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BoTech.XmlParser.Tests/BoTech.XmlParser.Tests.csproj" />
+  <Project Path="BoTech.XmlParser/BoTech.XmlParser.csproj" />
+</Solution>
