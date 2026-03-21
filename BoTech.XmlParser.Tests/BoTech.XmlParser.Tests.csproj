@@ -26,4 +26,12 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="TestModels\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BoTech.XmlParser\BoTech.XmlParser.csproj" />
+    </ItemGroup>
+
 </Project>
