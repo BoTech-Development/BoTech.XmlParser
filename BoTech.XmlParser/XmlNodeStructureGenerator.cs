@@ -6,6 +6,7 @@ namespace BoTech.XmlParser;
 
 public class XmlNodeStructureGenerator
 {
+    private List<Type> _visitedTypes = new List<Type>();
     /// <summary>
     /// Creates the <see cref="XmlDocument"/> XmlNode structure.
     /// </summary>
@@ -15,27 +16,27 @@ public class XmlNodeStructureGenerator
     public XmlDocument GenerateXmlStructure<T>(T obj)
     {
         XmlNameEvaluator.Instance.Clear();
+        _visitedTypes.Clear();
         XmlDocument doc = new XmlDocument();
-        XmlNode parentNode = new XmlNode("ROOT", "ROOT","ROOT", null);
+        XmlNode parentNode = new XmlNode("ROOT", "ROOT", null);
         GenerateXmlNodeStructure(obj, parentNode);
-        doc.Nodes.Add(parentNode);
+        doc.Nodes.AddRange(parentNode.Children);
         return doc;
     }
 
     /// <summary>
-    /// 
+    /// Creates the XmlNode structure recursive.
     /// </summary>
     /// <param name="obj"></param>
     /// <param name="parentNode"></param>
     /// <param name="parentProperty">The parent property must be set to the property info that was considered last before the recursive call. So the property that references the current object.</param>
-    /// <param name="additionalProperties"></param>
     private void GenerateXmlNodeStructure(object? obj, XmlNode parentNode, PropertyInfo? parentProperty = null)
     {
         if (obj == null) return;
         // Add the Xml Property Node if needed
         if (parentProperty != null)
         {
-            XmlNode newPropertyIdentifier = new XmlNode("PROPERTYIDENTIFIER", "PROPERTYIDENTIFIER","PROPERTYIDENTIFIER", parentProperty);
+            XmlNode newPropertyIdentifier = new XmlNode("PROPERTYIDENTIFIER", "PROPERTYIDENTIFIER", parentProperty);
             parentNode.Children.Add(newPropertyIdentifier);
             parentNode = newPropertyIdentifier;
         }
@@ -43,13 +44,25 @@ public class XmlNodeStructureGenerator
         XmlNode node = new XmlNode(
             type.Name,
             XmlNameEvaluator.Instance.GetXmlNameOrActualName(type), 
-            type.Namespace, 
             parentProperty);
         
         node.Properties.AddRange(GenerateAdditionalGenericTypeHints(obj));
+        if(IsTheNamespaceDeclarationNeededForTheXml(type))
+            node.Properties.Add(new XmlProperty("_nsp", "_nsp", type.Namespace));
         
         GenerateXmlNodesForAllProperties(type, node, obj);
         parentNode.Children.Add(node);
+    }
+    /// <summary>
+    /// It is necessary to declare tha namespace when there are multiple Types with the same name defined.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns>True when the given type has the same name as another already analyzed Type.</returns>
+    private bool IsTheNamespaceDeclarationNeededForTheXml(Type type)
+    {
+        bool isNamespaceNeeded = _visitedTypes.Any(visitedType => visitedType.Name == type.Name && !visitedType.Equals(type));
+        if(!_visitedTypes.Contains(type))_visitedTypes.Add(type);
+        return isNamespaceNeeded;
     }
     /// <summary>
     /// Adds all properties / values that are declared / contained in the given type to the XmlNode tree.

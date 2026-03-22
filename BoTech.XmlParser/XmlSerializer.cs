@@ -7,6 +7,8 @@ public class XmlSerializer
     public string Serialize<T>(T obj)
     {
         XmlDocument document = new XmlNodeStructureGenerator().GenerateXmlStructure(obj);
-        return document.GenerateXmlString();
+        string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        xml += document.GenerateXmlString();
+        return xml;
     }
 }

@@ -6,10 +6,6 @@ namespace BoTech.XmlParser.Models;
 public class XmlNode
 {
     /// <summary>
-    /// Will be declared in xml when the same class name is declared in another xmlnode
-    /// </summary>
-    public string? NamespaceOfReferencedClass { get; init; }
-    /// <summary>
     /// The name of the class or the defined xml name.
     /// </summary>
     public string ClassName { get; init; } 
@@ -32,9 +28,8 @@ public class XmlNode
 
     private const int CountOfEmptyCharsOfATab = 4;
 
-    public XmlNode(string className, string actualName, string? namespaceOfClass, PropertyInfo? parentPropertyInfo)
+    public XmlNode(string className, string actualName, PropertyInfo? parentPropertyInfo)
     {
-        NamespaceOfReferencedClass = namespaceOfClass;
         ClassName = className;
         ActualName = actualName;
         if(parentPropertyInfo != null && parentPropertyInfo.DeclaringType != null)
