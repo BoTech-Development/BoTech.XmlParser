@@ -31,6 +31,13 @@ public class XmlNodeStructureGenerator
     private void GenerateXmlNodeStructure(object? obj, XmlNode parentNode, PropertyInfo? parentProperty = null, List<XmlProperty>? additionalProperties = null)
     {
         if (obj == null) return;
+        // Add the Xml Property Node if needed
+        if (parentProperty != null)
+        {
+            XmlNode newPropertyIdentifier = new XmlNode("PROPERTYIDENTIFIER", "PROPERTYIDENTIFIER", parentProperty);
+            parentNode.Children.Add(newPropertyIdentifier);
+            parentNode = newPropertyIdentifier;
+        }
         Type type = obj.GetType();
         XmlNode node = new XmlNode(type.Name, type.Namespace, parentProperty);
         if (additionalProperties != null)
@@ -116,7 +123,7 @@ public class XmlNodeStructureGenerator
     /// <param name="parentNode"></param>
     /// <param name="property"></param>
     /// <param name="propertyValue"></param>
-    /// <param name="doesNextNodeNeedPropertyIdentifier">True when all sub nodes should have the</param>
+    /// <param name="doesNextNodeNeedPropertyIdentifier">True when all sub nodes should have the Property Identifier (for e.g. <BoForm.Imports>{SubNode goes here}</BoForm.Imports> declared.</param>
     /// <exception cref="NotSupportedException">When the collection type is not supported.</exception>
     private void AddCollectionContentToXmlNode(XmlNode parentNode, object propertyValue, PropertyInfo property, bool doesNextNodeNeedPropertyIdentifier)
     {

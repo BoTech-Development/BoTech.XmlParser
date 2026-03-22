@@ -198,71 +198,10 @@ public class TestSerialization
             }
         };
     }
-
-    [Test]
-    public void TestDefinitionErrorAnalyzer()
-    {
-      /*  System.Xml.Serialization.XmlSerializer serializer = new  System.Xml.Serialization.XmlSerializer(typeof(CollectionTestClass));
-        TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, new CollectionTestClass()
-        {
-            MyStringCollection =
-            {
-                "A",
-                "B",
-                "C",
-                "D",
-                "E"
-            },
-            MyCollectionOfCollectionsOfStrings =
-            {
-                new List<string>()
-                {
-                    "A1",
-                    "B1",
-                    "C1",
-                    "D1",
-                    "E1"
-                },
-                new List<string>()
-                {
-                    "A2",
-                    "B2",
-                    "C2",
-                    "D2",
-                    "E2"
-                },
-            },
-            MyDictionaryOfStrings =
-            {
-                {
-                  "Key1",
-                  "Value1"
-                },
-                { 
-                    "Key2",
-                    "Value2"
-                }
-            }
-        });
-        Console.WriteLine(writer.ToString());*/
-       // List<Type> types =  new ClassDefinitionErrorAnalyzer().GetGenericsOrTypeIgnoringIEnumerableTypes(typeof(CollectionTestClass).GetProperties()[2].PropertyType);
-        
-        Dictionary<PropertyInfo, PropertyDefinitionError> errors = new ClassDefinitionErrorAnalyzer().CheckIfTypeAndAllSubTypesAreSerializableAndGetAllErrors(typeof(BoForm));
-    }
     [Test]
     public void SerializationTest()
     {
         string xml = new XmlSerializer().Serialize(_sampleForm);
         File.WriteAllText(@"C:\temp\boform.xml", xml);
-    }
-
-    public class CollectionTestClass
-    {
-        public List<string> MyStringCollection { get; set; } = new List<string>();
-        
-        public List<List<string>> MyCollectionOfCollectionsOfStrings { get; set; } = new List<List<string>>();
-        [XmlIgnore]
-        public Dictionary<string, string> MyDictionaryOfStrings { get; set; } = new Dictionary<string, string>();
     }
 }

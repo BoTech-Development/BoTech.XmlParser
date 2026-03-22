@@ -7,7 +7,7 @@ public class XmlNode
     /// <summary>
     /// Will be declared in xml when the same class name is declared in another xmlnode
     /// </summary>
-    public string? NameSpaceOfReferencedClass { get; set; }
+    public string? NamespaceOfReferencedClass { get; set; }
     /// <summary>
     /// The name of the class or the defined xml name.
     /// </summary>
@@ -30,7 +30,7 @@ public class XmlNode
 
     public XmlNode(string className, string? namespaceOfClass, PropertyInfo? parentPropertyInfo)
     {
-        NameSpaceOfReferencedClass = namespaceOfClass;
+        NamespaceOfReferencedClass = namespaceOfClass;
         ClassName = className;
         _parentPropertyInfo = parentPropertyInfo;
         if(_parentPropertyInfo != null && _parentPropertyInfo.DeclaringType != null)
@@ -64,35 +64,33 @@ public class XmlNode
 
     private string SerializeChildren(int countOfTabs)
     {
-        Dictionary<string,List<XmlNode>> groupedNodesByParentClass = Children.GroupBy(child => child.NameOfParentClassAndProperty).ToDictionary(grouped => grouped.Key, grouped => grouped.ToList());
-        bool isPropertyIdentifierNeeded = IsPropertyIdentifierNeededForThisXmlNode();
-        string tabs = GenerateTabString(countOfTabs);
-        
-        if (isPropertyIdentifierNeeded)
+        if (IsPropertyIdentifierNeededForThisXmlNode())
         {
+            Dictionary<string, List<XmlNode>> groupedNodesByParentClass = GroupXmlNodesByThePropertyIdentifier();
+            string tabs = GenerateTabString(countOfTabs);
             return SerializeChildrenWithPropertyIdentifier(groupedNodesByParentClass, countOfTabs, tabs);
         }
         else
         {
-            return SerializeChildrenWithoutPropertyIdentifier(groupedNodesByParentClass, countOfTabs);
+            return SerializeChildrenWithoutPropertyIdentifier(countOfTabs);
         }
-
-
-        
-        
-        /*
-        if (IsPropertyIdentifierNeededForThisXmlNode())
-        {
-            return SerializeMultipleChildren(countOfTabs);
-        }
-        else
-        {
-            string childrenXml = "";
-            childrenXml += Children[0].Serialize(countOfTabs);
-            return childrenXml;
-        }*/
     }
-
+    /// <summary>
+    /// Groups the <see cref="Children"/> Property by their Parent property identifier.
+    /// </summary>
+    /// <returns>A Dictionary which contains the identifiers as a key.</returns>
+    private Dictionary<string, List<XmlNode>> GroupXmlNodesByThePropertyIdentifier()
+    {
+        Dictionary<string, List<XmlNode>> groupedNodesByParentClass = new();
+        foreach (XmlNode xmlNodeIdentifier in Children)
+        {
+            if(groupedNodesByParentClass.ContainsKey(xmlNodeIdentifier.NameOfParentClassAndProperty))
+                groupedNodesByParentClass[xmlNodeIdentifier.NameOfParentClassAndProperty].AddRange(xmlNodeIdentifier.Children);
+            else
+                groupedNodesByParentClass.Add(xmlNodeIdentifier.NameOfParentClassAndProperty, xmlNodeIdentifier.Children);
+        }
+        return groupedNodesByParentClass;
+    } 
     private string SerializeChildrenWithPropertyIdentifier(Dictionary<string,List<XmlNode>> groupedNodesByParentClass,  int countOfTabs, string tabs)
     {
         string childrenXml = "";
@@ -107,33 +105,12 @@ public class XmlNode
         }
         return childrenXml;
     }
-    private string SerializeChildrenWithoutPropertyIdentifier(Dictionary<string,List<XmlNode>> groupedNodesByParentClass,  int countOfTabs)
+    private string SerializeChildrenWithoutPropertyIdentifier(int countOfTabs)
     {
         string childrenXml = "";
-        foreach (KeyValuePair<string, List<XmlNode>> pair in groupedNodesByParentClass)
+        foreach (XmlNode child in Children)
         {
-            //childrenXml += $"\n";
-            foreach (XmlNode child in pair.Value)
-            {
-                childrenXml += child.Serialize(countOfTabs);
-            }
-            //childrenXml += $"\n";
-        }
-        return childrenXml;
-    }
-    private string SerializeMultipleChildren(int countOfTabs)
-    {
-        Dictionary<string,List<XmlNode>> groupedNodesByParentClass = Children.GroupBy(child => child.NameOfParentClassAndProperty).ToDictionary(grouped => grouped.Key, grouped => grouped.ToList());
-        string tabs = GenerateTabString(countOfTabs);
-        string childrenXml = "";
-        foreach (KeyValuePair<string, List<XmlNode>> pair in groupedNodesByParentClass)
-        {
-            childrenXml += tabs + $"<{pair.Key}>\n";
-            foreach (XmlNode child in pair.Value)
-            {
-                childrenXml += child.Serialize(countOfTabs + 1);
-            }
-            childrenXml += tabs + $"</{pair.Key}>\n";
+            childrenXml += child.Serialize(countOfTabs);
         }
         return childrenXml;
     }
