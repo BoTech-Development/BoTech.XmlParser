@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Xml.Serialization;
-using BoTech.XmlParser.Error.ObjectDefinitions;
-using BoTech.XmlParser.Tests.TestModels.Controls;
+﻿using BoTech.XmlParser.Tests.TestModels.Controls;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input.Numeric;
