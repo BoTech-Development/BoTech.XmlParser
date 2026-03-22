@@ -1,4 +1,7 @@
-﻿namespace BoTech.XmlParser.Tests.TestModels.Controls.Input;
+﻿using BoTech.XmlParser.Attributes;
+
+namespace BoTech.XmlParser.Tests.TestModels.Controls.Input;
+[XmlName("Input")]
 public class AInput : IInput<object>
 {
     public string Description { get; init; }

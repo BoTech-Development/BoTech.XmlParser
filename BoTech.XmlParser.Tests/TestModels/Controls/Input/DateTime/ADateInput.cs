@@ -1,4 +1,7 @@
-﻿namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
+﻿using BoTech.XmlParser.Attributes;
+
+namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
+[XmlName("DateInput")]
 public class ADateInput : IInput<DateOnly>
 {
     public string Description { get; init; }

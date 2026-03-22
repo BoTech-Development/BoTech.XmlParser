@@ -1,5 +1,7 @@
-﻿namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.Text;
+﻿using BoTech.XmlParser.Attributes;
 
+namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.Text;
+[XmlName("SearchTextInput")]
 public class ASearchTextInput : ATextInput
 {
     public string StaticItemSource { get; set; }

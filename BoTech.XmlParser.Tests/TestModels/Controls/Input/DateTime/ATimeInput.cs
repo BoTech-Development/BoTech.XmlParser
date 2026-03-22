@@ -1,5 +1,7 @@
-﻿namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
+﻿using BoTech.XmlParser.Attributes;
 
+namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
+[XmlName("TimeInput")]
 public class ATimeInput : IInput<TimeOnly>
 {
     public string Description { get; init; }

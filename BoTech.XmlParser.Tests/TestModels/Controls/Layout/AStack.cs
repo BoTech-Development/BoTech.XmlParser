@@ -1,5 +1,7 @@
-﻿namespace BoTech.XmlParser.Tests.TestModels.Controls.Layout;
+﻿using BoTech.XmlParser.Attributes;
 
+namespace BoTech.XmlParser.Tests.TestModels.Controls.Layout;
+[XmlName("Stack")]
 public class AStack : ILayoutElement
 {
 

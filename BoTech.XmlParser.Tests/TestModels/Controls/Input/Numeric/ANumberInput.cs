@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
-namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.Numeric;
+using BoTech.XmlParser.Attributes;
 
+namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.Numeric;
+[XmlName("NumberInput")]
 public class ANumberInput<T> : IInput<T> where T : INumber<T>
 {
     public string Description { get; init; }

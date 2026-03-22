@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using BoTech.XmlParser.Attributes;
 
 namespace BoTech.XmlParser.Models;
 
@@ -7,39 +8,43 @@ public class XmlNode
     /// <summary>
     /// Will be declared in xml when the same class name is declared in another xmlnode
     /// </summary>
-    public string? NamespaceOfReferencedClass { get; set; }
+    public string? NamespaceOfReferencedClass { get; init; }
     /// <summary>
     /// The name of the class or the defined xml name.
     /// </summary>
-    public string ClassName { get; set; } 
+    public string ClassName { get; init; } 
+    /// <summary>
+    /// The actual name defined by the <see cref="XmlName"/> attribute.
+    /// </summary>
+    public string ActualName { get; init; }
     /// <summary>
     /// All Properties that are defined in the start node tag.
     /// </summary>
-    public List<XmlProperty> Properties { get; set; } = new();
+    public List<XmlProperty> Properties { get; init; } = new();
     /// <summary>
     /// All inner children.
     /// </summary>
-    public List<XmlNode> Children { get; set; } = new();
+    public List<XmlNode> Children { get; init; } = new();
     /// <summary>
     /// The Name of the class and the property name which contains an object. => Example: <BoForm.FormContent>{Object Notation goes here}</BoForm.FormContent>
     /// </summary>
-    public string NameOfParentClassAndProperty { get; set; } = string.Empty;
+    public string NameOfParentClassAndProperty { get; init; } = string.Empty;
 
     private const int CountOfEmptyCharsOfATab = 4;
-    private readonly PropertyInfo? _parentPropertyInfo;
 
-    public XmlNode(string className, string? namespaceOfClass, PropertyInfo? parentPropertyInfo)
+    public XmlNode(string className, string actualName, string? namespaceOfClass, PropertyInfo? parentPropertyInfo)
     {
         NamespaceOfReferencedClass = namespaceOfClass;
         ClassName = className;
-        _parentPropertyInfo = parentPropertyInfo;
-        if(_parentPropertyInfo != null && _parentPropertyInfo.DeclaringType != null)
-            NameOfParentClassAndProperty =  $"{_parentPropertyInfo.DeclaringType.Name}.{_parentPropertyInfo.Name}";
+        ActualName = actualName;
+        if(parentPropertyInfo != null && parentPropertyInfo.DeclaringType != null)
+            NameOfParentClassAndProperty =  $"{parentPropertyInfo.DeclaringType.Name}.{parentPropertyInfo.Name}";
     }
     public string Serialize(int countOfTabs)
     {
         string tabs = GenerateTabString(countOfTabs);
-        string xml = tabs + $"<{ClassName}";
+        string name = ActualName == ClassName ? ClassName : ActualName;
+        string xml = tabs + $"<{name}";
         xml += SerializeProperties();
         if (Children.Count == 0)
             xml += "/>\n";
@@ -47,7 +52,7 @@ public class XmlNode
         {
             xml += ">\n";
             xml += SerializeChildren(countOfTabs + 1);
-            xml += tabs + $"</{ClassName}>\n";
+            xml += tabs + $"</{name}>\n";
         }
         return xml;
     }

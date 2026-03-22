@@ -14,8 +14,9 @@ public class XmlNodeStructureGenerator
     /// <returns></returns>
     public XmlDocument GenerateXmlStructure<T>(T obj)
     {
+        XmlNameEvaluator.Instance.Clear();
         XmlDocument doc = new XmlDocument();
-        XmlNode parentNode = new XmlNode("ROOT", "ROOT", null);
+        XmlNode parentNode = new XmlNode("ROOT", "ROOT","ROOT", null);
         GenerateXmlNodeStructure(obj, parentNode);
         doc.Nodes.Add(parentNode);
         return doc;
@@ -34,12 +35,16 @@ public class XmlNodeStructureGenerator
         // Add the Xml Property Node if needed
         if (parentProperty != null)
         {
-            XmlNode newPropertyIdentifier = new XmlNode("PROPERTYIDENTIFIER", "PROPERTYIDENTIFIER", parentProperty);
+            XmlNode newPropertyIdentifier = new XmlNode("PROPERTYIDENTIFIER", "PROPERTYIDENTIFIER","PROPERTYIDENTIFIER", parentProperty);
             parentNode.Children.Add(newPropertyIdentifier);
             parentNode = newPropertyIdentifier;
         }
         Type type = obj.GetType();
-        XmlNode node = new XmlNode(type.Name, type.Namespace, parentProperty);
+        XmlNode node = new XmlNode(
+            type.Name,
+            XmlNameEvaluator.Instance.GetXmlNameOrActualName(type), 
+            type.Namespace, 
+            parentProperty);
         if (additionalProperties != null)
         {
             node.Properties.AddRange(additionalProperties);
@@ -63,17 +68,17 @@ public class XmlNodeStructureGenerator
             if(propertyValue == null) continue;
             if (IsTypePrimitive(property.PropertyType))
             {
-                AddPrimitiveXmlAttributeToNode(node, property.Name, propertyValue);
+                AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
             }
             else if (IsParsable(property.PropertyType)) // When the object implements IParsable.
             {
                 string? parsedObject = propertyValue.ToString();
                 if(parsedObject != null)
-                    AddPrimitiveXmlAttributeToNode(node, property.Name, parsedObject);
+                    AddPrimitiveXmlAttributeToNode(node, property, parsedObject);
             }
             else if (property.PropertyType.IsEnum)
             {
-                AddPrimitiveXmlAttributeToNode(node, property.Name, propertyValue);
+                AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
             }
             else if (IsTypeCollection(property.PropertyType))
             {
@@ -104,7 +109,7 @@ public class XmlNodeStructureGenerator
     {
         Type[] genericTypes =  propertyValue.GetType().GetGenericArguments();
         List<XmlProperty> additionalGenericPropertyHints = new();
-        for(int i = 0; i < genericTypes.Length; i++) additionalGenericPropertyHints.Add(new XmlProperty($"_gt-{i}" , "_fn:" + genericTypes[i].FullName + "_asm:" + genericTypes[i].Assembly.FullName));
+        for(int i = 0; i < genericTypes.Length; i++) additionalGenericPropertyHints.Add(new XmlProperty($"_gt-{i}" , "", "_fn:" + genericTypes[i].FullName + "_asm:" + genericTypes[i].Assembly.FullName));
         GenerateXmlNodeStructure(propertyValue, parentNode, parentProperty, additionalGenericPropertyHints);
     }
     /// <summary>
@@ -159,9 +164,9 @@ public class XmlNodeStructureGenerator
     /// Adds a new XmlProperty to the given Node.
     /// </summary>
     /// <param name="node">The Node</param>
-    /// <param name="propertyName">The name of the property that should be displayed in xml.</param>
+    /// <param name="property">Will be used to determine the name of the property that should be displayed in xml.</param>
     /// <param name="propertyValue">The string value</param>
-    private void AddPrimitiveXmlAttributeToNode(XmlNode node, string propertyName, object propertyValue) => node.Properties.Add(new XmlProperty(propertyName, propertyValue.ToString()));
+    private void AddPrimitiveXmlAttributeToNode(XmlNode node, PropertyInfo property, object propertyValue) => node.Properties.Add(new XmlProperty(property.Name, XmlNameEvaluator.Instance.GetXmlNameOrActualName(property),propertyValue.ToString()));
     /// <summary>
     /// Primitive or string
     /// </summary>
