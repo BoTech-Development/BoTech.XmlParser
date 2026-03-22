@@ -29,7 +29,7 @@ public class XmlNodeStructureGenerator
     /// <param name="parentNode"></param>
     /// <param name="parentProperty">The parent property must be set to the property info that was considered last before the recursive call. So the property that references the current object.</param>
     /// <param name="additionalProperties"></param>
-    private void GenerateXmlNodeStructure(object? obj, XmlNode parentNode, PropertyInfo? parentProperty = null, List<XmlProperty>? additionalProperties = null)
+    private void GenerateXmlNodeStructure(object? obj, XmlNode parentNode, PropertyInfo? parentProperty = null)
     {
         if (obj == null) return;
         // Add the Xml Property Node if needed
@@ -45,10 +45,9 @@ public class XmlNodeStructureGenerator
             XmlNameEvaluator.Instance.GetXmlNameOrActualName(type), 
             type.Namespace, 
             parentProperty);
-        if (additionalProperties != null)
-        {
-            node.Properties.AddRange(additionalProperties);
-        }
+        
+        node.Properties.AddRange(GenerateAdditionalGenericTypeHints(obj));
+        
         GenerateXmlNodesForAllProperties(type, node, obj);
         parentNode.Children.Add(node);
     }
@@ -84,44 +83,24 @@ public class XmlNodeStructureGenerator
             {
                 AddCollectionContentToXmlNode(node, propertyValue, property, hasTypeMultipleObjectBasedPropertiesDefined);
             }
-            else if(property.PropertyType.IsGenericType) // User defined generic type
+            else //if(property.PropertyType.IsGenericType || propertyValue.GetType().IsGenericType) // User defined generic type
             {
                 if(hasTypeMultipleObjectBasedPropertiesDefined)
-                    AddGenericObjectToNode(node, propertyValue, property);
+                    GenerateXmlNodeStructure(propertyValue, node, property);
                 else
-                    AddGenericObjectToNode(node, propertyValue, null);
+                    GenerateXmlNodeStructure(propertyValue, node, null);
             }
-            else // User defined none generic object
-            {
-                if(hasTypeMultipleObjectBasedPropertiesDefined)
-                    AddObjectToNode(node, propertyValue, property);
-                else
-                    AddObjectToNode(node, propertyValue, null);
-            }
+          
         }
     }
-    /// <summary>
-    /// Adds a generic Object to the XmlTree.
-    /// </summary>
-    /// <param name="propertyValue"></param>
-    /// <param name="parentNode"></param>
-    private void AddGenericObjectToNode(XmlNode parentNode, object propertyValue, PropertyInfo? parentProperty)
+
+    private List<XmlProperty> GenerateAdditionalGenericTypeHints(object propertyValue)
     {
         Type[] genericTypes =  propertyValue.GetType().GetGenericArguments();
         List<XmlProperty> additionalGenericPropertyHints = new();
         for(int i = 0; i < genericTypes.Length; i++) additionalGenericPropertyHints.Add(new XmlProperty($"_gt-{i}" , "", "_fn:" + genericTypes[i].FullName + "_asm:" + genericTypes[i].Assembly.FullName));
-        GenerateXmlNodeStructure(propertyValue, parentNode, parentProperty, additionalGenericPropertyHints);
+        return additionalGenericPropertyHints;
     }
-    /// <summary>
-    /// Adds a standard object to the Xml Node.
-    /// </summary>
-    /// <param name="propertyValue"></param>
-    /// <param name="parentNode"></param>
-    private void AddObjectToNode(XmlNode parentNode, object propertyValue, PropertyInfo? parentProperty)
-    {
-        GenerateXmlNodeStructure(propertyValue, parentNode, parentProperty);
-    }
-
     /// <summary>
     /// Adds each object stored in the given collection to the XmlNode tree.
     /// </summary>
