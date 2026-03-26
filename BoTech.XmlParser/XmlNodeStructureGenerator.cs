@@ -42,7 +42,7 @@ public class XmlNodeStructureGenerator
         }
         Type type = obj.GetType();
         XmlNode node = new XmlNode(
-            type.Name,
+            type,
             XmlNameEvaluator.Instance.GetXmlNameOrActualName(type), 
             parentProperty);
         
@@ -158,7 +158,7 @@ public class XmlNodeStructureGenerator
     /// <param name="node">The Node</param>
     /// <param name="property">Will be used to determine the name of the property that should be displayed in xml.</param>
     /// <param name="propertyValue">The string value</param>
-    private void AddPrimitiveXmlAttributeToNode(XmlNode node, PropertyInfo property, object propertyValue) => node.Properties.Add(new XmlProperty(property.Name, XmlNameEvaluator.Instance.GetXmlNameOrActualName(property),propertyValue.ToString()));
+    private void AddPrimitiveXmlAttributeToNode(XmlNode node, PropertyInfo property, object propertyValue) => node.Properties.Add(new XmlProperty(property.PropertyType, property.Name, XmlNameEvaluator.Instance.GetXmlNameOrActualName(property),propertyValue.ToString()));
     /// <summary>
     /// Primitive or string
     /// </summary>

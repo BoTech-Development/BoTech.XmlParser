@@ -26,8 +26,26 @@ public class XmlNode
     /// </summary>
     public string NameOfParentClassAndProperty { get; init; } = string.Empty;
 
-    private const int CountOfEmptyCharsOfATab = 4;
+    /// <summary>
+    /// The corresponding type to this XmlNode
+    /// </summary>
+    public Type? ReferencedType { get; init; } = null;
 
+    private const int CountOfEmptyCharsOfATab = 4;
+    public XmlNode(Type referencedType, string actualName, PropertyInfo? parentPropertyInfo)
+    {
+        ReferencedType = referencedType;
+        ClassName = referencedType.Name;
+        ActualName = actualName;
+        if(parentPropertyInfo != null && parentPropertyInfo.DeclaringType != null)
+            NameOfParentClassAndProperty =  $"{parentPropertyInfo.DeclaringType.Name}.{parentPropertyInfo.Name}";
+    }
+    /// <summary>
+    /// This constructor can be used to create a wrapper node, for example a property identifier node.
+    /// </summary>
+    /// <param name="className"></param>
+    /// <param name="actualName"></param>
+    /// <param name="parentPropertyInfo"></param>
     public XmlNode(string className, string actualName, PropertyInfo? parentPropertyInfo)
     {
         ClassName = className;
