@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 using BoTech.XmlParser.Models;
+using BoTech.XmlParser.Services;
 
 namespace BoTech.XmlParser;
 
@@ -15,13 +16,13 @@ public class XmlNodeStructureGenerator
     /// <returns></returns>
     public XmlDocument GenerateXmlStructure<T>(T obj, Assembly callingAssembly)
     {
-        XmlNameEvaluator.CreateInstance(callingAssembly);
+        TypeResolver.CreateInstance(callingAssembly);
         _visitedTypes.Clear();
         XmlDocument doc = new XmlDocument();
         XmlNode parentNode = new XmlNode("ROOT", "ROOT", null);
         GenerateXmlNodeStructure(obj, parentNode);
         doc.Nodes.AddRange(parentNode.Children);
-        XmlNameEvaluator.Instance.Clear();
+        TypeResolver.Instance.Clear();
         return doc;
     }
 
@@ -44,7 +45,7 @@ public class XmlNodeStructureGenerator
         Type type = obj.GetType();
         XmlNode node = new XmlNode(
             type,
-            XmlNameEvaluator.Instance.GetXmlNameOrActualName(type), 
+            XmlNameEvaluator.GetXmlNameOrActualName(type), 
             parentProperty);
         
         node.Properties.AddRange(GenerateAdditionalGenericTypeHints(obj));
@@ -54,17 +55,14 @@ public class XmlNodeStructureGenerator
         GenerateXmlNodesForAllProperties(type, node, obj);
         parentNode.Children.Add(node);
     }
+
     /// <summary>
     /// It is necessary to declare tha namespace when there are multiple Types with the same name defined.
     /// </summary>
     /// <param name="type"></param>
     /// <returns>True when the given type has the same name as another already analyzed Type.</returns>
-    private bool IsTheNamespaceDeclarationNeededForTheXml(Type type)
-    {
-        bool isNamespaceNeeded = _visitedTypes.Any(visitedType => visitedType.Name == type.Name && !visitedType.Equals(type));
-        if(!_visitedTypes.Contains(type))_visitedTypes.Add(type);
-        return isNamespaceNeeded;
-    }
+    private bool IsTheNamespaceDeclarationNeededForTheXml(Type type) =>
+        TypeResolver.Instance.GetAnotherTypeDefinedWithTheSameNameButIsNotGivenType(type) != null;
     /// <summary>
     /// Adds all properties / values that are declared / contained in the given type to the XmlNode tree.
     /// </summary>
@@ -159,7 +157,7 @@ public class XmlNodeStructureGenerator
     /// <param name="node">The Node</param>
     /// <param name="property">Will be used to determine the name of the property that should be displayed in xml.</param>
     /// <param name="propertyValue">The string value</param>
-    private void AddPrimitiveXmlAttributeToNode(XmlNode node, PropertyInfo property, object propertyValue) => node.Properties.Add(new XmlProperty(property.PropertyType, property.Name, XmlNameEvaluator.Instance.GetXmlNameOrActualName(property),propertyValue.ToString()));
+    private void AddPrimitiveXmlAttributeToNode(XmlNode node, PropertyInfo property, object propertyValue) => node.Properties.Add(new XmlProperty(property.PropertyType, property.Name, XmlNameEvaluator.GetXmlNameOrActualName(property),propertyValue.ToString()));
     /// <summary>
     /// Primitive or string
     /// </summary>

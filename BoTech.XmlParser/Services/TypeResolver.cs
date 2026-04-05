@@ -5,10 +5,31 @@ namespace BoTech.XmlParser.Services;
 
 public class TypeResolver
 {
+    private static TypeResolver? _instance = null;
+    public static TypeResolver Instance
+    {
+        get
+        {
+            if (_instance == null) throw  new InvalidOperationException("This instance has not been initialized.");
+            return _instance;
+        }
+    }
     private readonly List<Type> _instantiableTypes;
-    public TypeResolver(Assembly callingAssembly)
+    private TypeResolver(Assembly callingAssembly)
     {
         _instantiableTypes = GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(callingAssembly);
+    }
+    /// <summary>
+    /// Creates a new instance of the singleton
+    /// </summary>
+    /// <param name="callingAssembly">The Assembly that called this Serialisation or Deserialisation method.</param>
+    public static void CreateInstance(Assembly callingAssembly){ _instance = new TypeResolver(callingAssembly); }
+    /// <summary>
+    /// Resets the singleton (deletes the current Instance). Please use this method for releasing Memory.
+    /// </summary>
+    public void Clear()
+    {
+        _instance = null;
     }
     /// <summary>
     /// This Method check if another type in the calling Assembly or a referenced Assembly has the same XmlName, as the given Type.
