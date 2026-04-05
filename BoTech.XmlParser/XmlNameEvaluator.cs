@@ -15,11 +15,11 @@ public static class XmlNameEvaluator
     public static string GetXmlNameOrActualName(Type type)
     {
         XmlName nameDefinition = GetXmlNameFromMemberInfoOrPredefinedName(type, type.Name);
-       /* Type? otherTypeWithTheSameXmlName = null;
+        Type? otherTypeWithTheSameXmlName = null;
         if((otherTypeWithTheSameXmlName = TypeResolver.Instance.HasAnotherTypeTheSameXmlName(nameDefinition, type)) != null)
             throw new ArgumentException(
                 $"It is not allowed to describe different Classes with the same XmlName: The Name: {nameDefinition.Name}. First Class: {type.FullName}. Second Class: {otherTypeWithTheSameXmlName.FullName}.");
-       */ return nameDefinition.Name;
+        return nameDefinition.Name;
     }
     /// <summary>
     /// Tries to create a name for the Property XmlTag. At the same time this method checks if the XmlName (if exists) is correctly defined.
@@ -30,11 +30,11 @@ public static class XmlNameEvaluator
     public static string GetXmlNameOrActualName(PropertyInfo propertyInfo)
     {
         XmlName nameDefinition = GetXmlNameFromMemberInfoOrPredefinedName(propertyInfo, propertyInfo.Name);
-      /*  PropertyInfo? otherPropertyInfoWithTheSameXmlName = GetAnotherPropertyDefinedInTheTypeWithTheSameXmlName(nameDefinition, propertyInfo, propertyInfo.DeclaringType);
+        PropertyInfo? otherPropertyInfoWithTheSameXmlName = GetAnotherPropertyDefinedInTheTypeWithTheSameXmlName(nameDefinition, propertyInfo, propertyInfo.DeclaringType);
         if(otherPropertyInfoWithTheSameXmlName != null)
             throw new ArgumentException(
                 $"It is not allowed to describe different Properties with the same XmlName: The Name: {nameDefinition.Name}. First Member: {propertyInfo}. Second Member: {otherPropertyInfoWithTheSameXmlName}, In the class: {propertyInfo.DeclaringType.FullName}.");
-       */ return nameDefinition.Name;
+        return nameDefinition.Name;
     }
     private static XmlName GetXmlNameFromMemberInfoOrPredefinedName(MemberInfo info, string predefinedActualName)
     {
