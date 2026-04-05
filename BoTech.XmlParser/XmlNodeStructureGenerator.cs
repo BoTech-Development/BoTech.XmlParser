@@ -110,7 +110,7 @@ public class XmlNodeStructureGenerator
     {
         Type[] genericTypes =  propertyValue.GetType().GetGenericArguments();
         List<XmlProperty> additionalGenericPropertyHints = new();
-        for(int i = 0; i < genericTypes.Length; i++) additionalGenericPropertyHints.Add(new XmlProperty($"_gt-{i}" , "", "_fn:" + genericTypes[i].FullName + "_asm:" + genericTypes[i].Assembly.FullName));
+        for(int i = 0; i < genericTypes.Length; i++) additionalGenericPropertyHints.Add(new XmlProperty(  "",$"_gt-{i}", "_fn:" + genericTypes[i].FullName + "_asm:" + genericTypes[i].Assembly.FullName));
         return additionalGenericPropertyHints;
     }
     /// <summary>
