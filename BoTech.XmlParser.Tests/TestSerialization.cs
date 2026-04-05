@@ -1,4 +1,5 @@
-﻿using BoTech.XmlParser.Tests.TestModels.Controls;
+﻿using BoTech.XmlParser.Tests.TestModels;
+using BoTech.XmlParser.Tests.TestModels.Controls;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input.Numeric;
@@ -199,6 +200,6 @@ public class TestSerialization
     public void SerializationTest()
     {
         string xml = new XmlSerializer().Serialize(_sampleForm);
-        File.WriteAllText(@"C:\temp\boform.xml", xml);
+        Console.WriteLine(xml);
     }
 }

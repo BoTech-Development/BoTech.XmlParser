@@ -13,14 +13,15 @@ public class XmlNodeStructureGenerator
     /// <param name="obj">Object instance for creating the structure.</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public XmlDocument GenerateXmlStructure<T>(T obj)
+    public XmlDocument GenerateXmlStructure<T>(T obj, Assembly callingAssembly)
     {
-        XmlNameEvaluator.Instance.Clear();
+        XmlNameEvaluator.CreateInstance(callingAssembly);
         _visitedTypes.Clear();
         XmlDocument doc = new XmlDocument();
         XmlNode parentNode = new XmlNode("ROOT", "ROOT", null);
         GenerateXmlNodeStructure(obj, parentNode);
         doc.Nodes.AddRange(parentNode.Children);
+        XmlNameEvaluator.Instance.Clear();
         return doc;
     }
 

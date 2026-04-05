@@ -1,4 +1,6 @@
-﻿namespace BoTech.XmlParser.Tests.TestModels.Models.Import;
+﻿using BoTech.XmlParser.Attributes;
+
+namespace BoTech.XmlParser.Tests.TestModels.Models.Import;
 /// <summary>
 /// You can use this class to declare a ViewModel input. A ViewModel is a class, that is connected to various input fields in the form.
 /// </summary>
@@ -7,6 +9,7 @@ public class ViewModelImport : ImportBase
     /// <summary>
     /// The Namespace of the class without the class name
     /// </summary>
+    [XmlName("NSP")]
     public string Namespace { get; init; } = string.Empty;
     /// <summary>
     /// The name of the class 

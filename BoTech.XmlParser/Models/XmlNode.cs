@@ -75,7 +75,7 @@ public class XmlNode
         string propertyXml = "";
         foreach (XmlProperty property in Properties)
         {
-            propertyXml += $" {property.Name}=\"{property.Value}\"";
+            propertyXml += $" {property.ActualName}=\"{property.Value}\"";
         }
         return propertyXml;
     }
