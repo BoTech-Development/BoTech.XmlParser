@@ -10,7 +10,12 @@ public class TypeResolver
     {
         _instantiableTypes = GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(callingAssembly);
     }
-
+    /// <summary>
+    /// This Method check if another type in the calling Assembly or a referenced Assembly has the same XmlName, as the given Type.
+    /// </summary>
+    /// <param name="xmlName">The name of the given Type.</param>
+    /// <param name="currentType"></param>
+    /// <returns>The type which has the same name or null.</returns>
     public Type? HasAnotherTypeTheSameXmlName(XmlName xmlName, MemberInfo currentType)
     {
         foreach (Type instantiableType in _instantiableTypes)
@@ -28,6 +33,11 @@ public class TypeResolver
             }
         return null;
     }
+    /// <summary>
+    /// This Method tries to find another type which has the same Name. That means there a two classes declared in a referenced Assembly or in the calling assembly which have the same name.
+    /// </summary>
+    /// <param name="notThisTypeButTheSameName"></param>
+    /// <returns>The type with the same name or null.</returns>
     public Type? GetAnotherTypeDefinedWithTheSameNameButIsNotGivenType(Type notThisTypeButTheSameName)
     {
         string typeName = notThisTypeButTheSameName.Name;
@@ -36,6 +46,11 @@ public class TypeResolver
                 return type;
         return null;
     }
+    /// <summary>
+    /// Fetches all Instantiable types from the given Assembly and all Referenced Assemblies by this Assembly.
+    /// </summary>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
     private List<Type> GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(Assembly assembly)
     {
         List<Type> result = new List<Type>();
@@ -47,7 +62,11 @@ public class TypeResolver
         }
         return result;
     }
-
+    /// <summary>
+    /// Loads and returns all Assemblies that are referenced by the current Assembly.
+    /// </summary>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
     private List<Assembly> GetReferencedAssembliesFromAssembly(Assembly assembly)
     {
         List<Assembly> referencedAssemblies = new List<Assembly>();

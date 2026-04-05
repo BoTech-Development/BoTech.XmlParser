@@ -26,20 +26,20 @@ public class XmlNameEvaluator
     /// </summary>
     /// <param name="callingAssembly">The Assembly that called this Serialisation or Deserialisation method.</param>
     public static void CreateInstance(Assembly callingAssembly){ _instance = new XmlNameEvaluator(callingAssembly); }
-
-    private Dictionary<string, MemberInfo> _evaluatedXmlNamesInCombinationWithTheirTypes = new Dictionary<string, MemberInfo>();
-
-
     /// <summary>
     /// Resets the singleton (deletes the current Instance)
     /// </summary>
     public void Clear()
     {
-        _evaluatedXmlNamesInCombinationWithTheirTypes.Clear();
         _typeResolver = null;
         _instance = null;
     }
-
+    /// <summary>
+    /// Tries to create a name for the XmlTag. At the same time this method checks if the XmlName (if exists) is correctly defined.
+    /// </summary>
+    /// <param name="type">The type for which the name is to be created.</param>
+    /// <returns>The XmlName or the actual Name of the given Type.</returns>
+    /// <exception cref="ArgumentException">Will be thrown when the definition is not correct. Please catch this Exception not in this library.</exception>
     public string GetXmlNameOrActualName(Type type)
     {
         XmlName nameDefinition = GetXmlNameFromMemberInfoOrPredefinedName(type, type.Name);
@@ -53,8 +53,12 @@ public class XmlNameEvaluator
                 $"It is not allowed to declare different Classes with the same Name: The Name: {type.Name}. First Class: {type.FullName}. Second Class: {otherTypeWithTheSameName.FullName}.");
         return nameDefinition.Name;
     }
-        //=> GetXmlNameOrActualPreDefinedName(type, type.Name);
-
+    /// <summary>
+    /// Tries to create a name for the Property XmlTag. At the same time this method checks if the XmlName (if exists) is correctly defined.
+    /// </summary>
+    /// <param name="propertyInfo">The property for which the name is to be created.</param>
+    /// <returns>The XmlName or the actual Name of the Property.</returns>
+    /// <exception cref="ArgumentException">Will be thrown when the definition is not correct. Please catch this Exception not in this library.</exception>
     public string GetXmlNameOrActualName(PropertyInfo propertyInfo)
     {
         XmlName nameDefinition = GetXmlNameFromMemberInfoOrPredefinedName(propertyInfo, propertyInfo.Name);
@@ -96,6 +100,12 @@ public class XmlNameEvaluator
         }
         return null;
     }
+    /// <summary>
+    /// This Method tries to find the XmlName Attribute for a specific member.
+    /// </summary>
+    /// <param name="info">The Member</param>
+    /// <returns>The XmlName.</returns>
+    /// <exception cref="InvalidOperationException">Will be thrown when a XmlName is not defined for the given Member.</exception>
     public static XmlName TryToGetXmlNameFromMemberInfo(MemberInfo info)
     {
         return (XmlName)info.GetCustomAttributes()
