@@ -17,6 +17,7 @@ public class XmlDeserializer
     {
         GroupedXmlStringNode masterParentNode = CreateInitialNestedXmlStructureFromSplitXml(
             SplitXmlStringByLessThanCharAndRemoveSpacesAndNewLineSymbols(xml));
+        masterParentNode.InitializeThisAndChildren();
         return default(T);
     }
     /// <summary>
