@@ -9,7 +9,7 @@ public class XmlDocument
         string result = "";
         foreach (XmlNode node in Nodes)
         {
-            result += node.Serialize(0) + "\n";
+            result += node.Serialize() + "\n";
         }
         return result;
     }

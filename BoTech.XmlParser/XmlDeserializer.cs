@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using BoTech.XmlParser.Helper.Deserializer;
 using BoTech.XmlParser.Models;
 using BoTech.XmlParser.Models.Deserializer;
 
@@ -17,7 +18,7 @@ public class XmlDeserializer
     {
         GroupedXmlStringNode masterParentNode = CreateInitialNestedXmlStructureFromSplitXml(
             SplitXmlStringByLessThanCharAndRemoveSpacesAndNewLineSymbols(xml));
-        masterParentNode.InitializeThisAndChildren();
+        XmlNode node = new GroupedXmlStringNodeParser().SemiParseGroupedXmlNodesToXmlNodes(masterParentNode);
         return default(T);
     }
     /// <summary>

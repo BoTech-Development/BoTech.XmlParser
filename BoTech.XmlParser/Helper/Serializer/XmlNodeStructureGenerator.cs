@@ -3,7 +3,7 @@ using System.Reflection;
 using BoTech.XmlParser.Models;
 using BoTech.XmlParser.Services;
 
-namespace BoTech.XmlParser;
+namespace BoTech.XmlParser.Helper.Serializer;
 
 public class XmlNodeStructureGenerator
 {
@@ -19,7 +19,7 @@ public class XmlNodeStructureGenerator
         TypeResolver.CreateInstance(callingAssembly);
         _visitedTypes.Clear();
         XmlDocument doc = new XmlDocument();
-        XmlNode parentNode = new XmlNode("ROOT", "ROOT", null);
+        XmlNode parentNode = XmlNode.CreateRootXmlNode();
         GenerateXmlNodeStructure(obj, parentNode);
         doc.Nodes.AddRange(parentNode.Children);
         TypeResolver.Instance.Clear();
@@ -38,26 +38,22 @@ public class XmlNodeStructureGenerator
         // Add the Xml Property Node if needed
         if (parentProperty != null)
         {
-            XmlNode newPropertyIdentifier = new XmlNode("PROPERTYIDENTIFIER", "PROPERTYIDENTIFIER", parentProperty);
+            XmlNode newPropertyIdentifier = XmlNode.CreatePropertyIdentifierXmlNode(parentProperty);
             parentNode.Children.Add(newPropertyIdentifier);
             parentNode = newPropertyIdentifier;
         }
         Type type = obj.GetType();
-        XmlNode node = new XmlNode(
-            type,
-            XmlNameEvaluator.GetXmlNameOrActualName(type), 
-            parentProperty);
-        
-        node.Properties.AddRange(GenerateAdditionalGenericTypeHints(obj));
+        XmlNode node = XmlNode.CreateXmlNodeFromTypeAndProperty(type, XmlNameEvaluator.GetXmlNameOrActualName(type), parentProperty);
+        node.InternalSerializerProperties.AddRange(GenerateAdditionalGenericTypeHints(obj));
         if(IsTheNamespaceDeclarationNeededForTheXml(type))
-            node.Properties.Add(new XmlProperty("_nsp", "_nsp", type.Namespace));
+            node.InternalSerializerProperties.Add(new XmlProperty("_nsp", "_nsp", type.Namespace));
         
         GenerateXmlNodesForAllProperties(type, node, obj);
         parentNode.Children.Add(node);
     }
 
     /// <summary>
-    /// It is necessary to declare tha namespace when there are multiple Types with the same name defined.
+    /// It is necessary to declare the namespace when there are multiple Types with the same name defined.
     /// </summary>
     /// <param name="type"></param>
     /// <returns>True when the given type has the same name as another already analyzed Type.</returns>

@@ -2,7 +2,7 @@
 using BoTech.XmlParser.Attributes;
 using BoTech.XmlParser.Services;
 
-namespace BoTech.XmlParser;
+namespace BoTech.XmlParser.Helper.Serializer;
 
 public static class XmlNameEvaluator
 {
