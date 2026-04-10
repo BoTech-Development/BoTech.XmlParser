@@ -68,6 +68,33 @@ public class TypeResolver
                 return type;
         return null;
     }
+
+    public Type TryToGetTypeByNameInXmlDocument(string nameInXmlDocument, string namespaceInXmlDocument)
+    {
+        foreach (var type in _instantiableTypes)
+        {
+            if (HasTypeTheSameXmlDocumentName(type, nameInXmlDocument))
+            {
+                if(HasTypeTheSameNamespace(type, namespaceInXmlDocument)) 
+                    return type;
+            }
+        }
+        throw new ArgumentException($"The Type with the name: {nameInXmlDocument} and the namespace: {namespaceInXmlDocument} was not found.");
+    }
+
+    private bool HasTypeTheSameNamespace(Type type, string namespaceInXmlDocument)
+    {
+        if(namespaceInXmlDocument == "") return true;
+        if(type.Namespace == namespaceInXmlDocument) return true;
+        return false;
+    }
+    private bool HasTypeTheSameXmlDocumentName(Type type, string nameInXmlDocument)
+    {
+        XmlName? definedXmlNameInType  = XmlNameEvaluator.GetXmlNameOrNullFromMemberInfo(type);
+        if(definedXmlNameInType != null && definedXmlNameInType.Name == nameInXmlDocument) return true;
+        if(type.Name == nameInXmlDocument) return true;
+        return false;
+    }
     /// <summary>
     /// Fetches all Instantiable types from the given Assembly and all Referenced Assemblies by this Assembly.
     /// </summary>

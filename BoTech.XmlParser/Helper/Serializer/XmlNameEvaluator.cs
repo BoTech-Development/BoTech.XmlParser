@@ -68,6 +68,18 @@ public static class XmlNameEvaluator
         }
         return null;
     }
+
+    public static XmlName? GetXmlNameOrNullFromMemberInfo(MemberInfo info)
+    {
+        try
+        {
+            return TryToGetXmlNameFromMemberInfo(info);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
     /// <summary>
     /// This Method tries to find the XmlName Attribute for a specific member.
     /// </summary>

@@ -13,7 +13,7 @@ public class XmlNode
     /// <summary>
     /// The actual name defined by the <see cref="XmlName"/> attribute.
     /// </summary>
-    public string ActualName { get; init; }
+    public string XmlName { get; init; }
     /// <summary>
     /// All Properties that are defined in the start node tag.
     /// </summary>
@@ -39,19 +39,19 @@ public class XmlNode
     /// <summary>
     /// The corresponding type to this XmlNode
     /// </summary>
-    public Type? ReferencedType { get; init; } = null;
+    public Type? ReferencedType { get; set; } = null;
 
-    private XmlNode(string className, string actualName, string nameOfParentClassAndProperty, Type? referencedType)
+    private XmlNode(string className, string xmlName, string nameOfParentClassAndProperty, Type? referencedType)
     {
         ClassName = className;
-        ActualName = actualName;
+        XmlName = xmlName;
         ReferencedType = referencedType;
         NameOfParentClassAndProperty = nameOfParentClassAndProperty;
     }
     
-    public static XmlNode CreateXmlNodeFromTypeAndProperty(Type referencedType, string actualName, PropertyInfo? parentPropertyInfo) 
+    public static XmlNode CreateXmlNodeFromTypeAndProperty(Type referencedType, string xmlName, PropertyInfo? parentPropertyInfo) 
         => new XmlNode(referencedType.Name, 
-                       actualName,
+                        xmlName,
                        GetPropertyIdentifierFromProperty(parentPropertyInfo), 
                        referencedType);
     public static XmlNode CreateEmptyNodeWithXmlNode(string xmlName) 
@@ -82,5 +82,18 @@ public class XmlNode
             nameOfParentClassAndProperty =  $"{parentPropertyInfo.DeclaringType.Name}.{parentPropertyInfo.Name}";
         return nameOfParentClassAndProperty;
     }
+    public string GetNameOfThisNodeInAXmlDocument() => ClassName == "" ? XmlName : ClassName;
+
+    public string GetDeclaredNamespaceIfExist()
+    {
+        if(InternalSerializerProperties.Count == 0) return "";
+        string? declaredNamespace = InternalSerializerProperties.FirstOrDefault(property => property.Name == "_nsp")?.Value;
+        if(declaredNamespace == null) return "";
+        return declaredNamespace;
+    }
+    /// <summary>
+    /// Serializes the current node and all children using the <see cref="XmlNodeSerializer"/>.
+    /// </summary>
+    /// <returns>A string representation of this node.</returns>
     public string Serialize() => new XmlNodeSerializer().SerializeNodeAndChildren(this);
 }

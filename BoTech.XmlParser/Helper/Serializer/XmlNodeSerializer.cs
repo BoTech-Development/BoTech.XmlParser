@@ -26,7 +26,7 @@ public class XmlNodeSerializer
     private string SerializeRecursive(XmlNode currentNode, int countOfTabs)
     {
         string tabs = GenerateTabString(countOfTabs);
-        string name = currentNode.ActualName == currentNode.ClassName ? currentNode.ClassName : currentNode.ActualName;
+        string name = currentNode.GetNameOfThisNodeInAXmlDocument();
         string xml = tabs + $"<{name}";
         xml += SerializeProperties(currentNode);
         if (currentNode.Children.Count == 0)
