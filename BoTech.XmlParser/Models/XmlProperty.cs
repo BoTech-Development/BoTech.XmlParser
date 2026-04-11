@@ -9,27 +9,28 @@ public class XmlProperty
     /// <summary>
     /// Name before the equals char.
     /// </summary>
-    public string Name { get; init; }
+    public string PropertyName { get; init; }
     /// <summary>
     /// The actual name defined by the <see cref="XmlName"/> attribute.
     /// </summary>
-    public string ActualName { get; init; }
+    public string XmlName { get; init; }
     /// <summary>
     /// Value of the property.
     /// </summary>
     public string? Value { get; init; }
 
-    public XmlProperty(Type valueType,string name, string actualName, string? value)
+    public XmlProperty(Type valueType, string propertyName, string xmlName, string? value)
     {
         ValueType = valueType;
-        Name = name;
-        ActualName = actualName;
+        PropertyName = propertyName;
+        XmlName = xmlName;
         Value = value;
     }
-    public XmlProperty(string name, string actualName, string? value)
+    public XmlProperty(string propertyName, string xmlName, string? value)
     {
-        Name = name;
-        ActualName = actualName;
+        PropertyName = propertyName;
+        XmlName = xmlName;
         Value = value;
     }
+    public string GetNameOfThisPropertyInAXmlDocument() => PropertyName == "" ? XmlName : PropertyName;
 }

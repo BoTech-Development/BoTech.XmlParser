@@ -90,7 +90,7 @@ public class GroupedXmlStringToXmlNodeConverter
         }
         return separatedProperties;
     }
-    private bool IsXmlPropertyAnInternalProperty(XmlProperty property) => property.ActualName == "_nsp" || property.ActualName.Contains("_gt-");
+    private bool IsXmlPropertyAnInternalProperty(XmlProperty property) => property.GetNameOfThisPropertyInAXmlDocument() == "_nsp" || property.GetNameOfThisPropertyInAXmlDocument().Contains("_gt-");
     private XmlProperty CreateXmlPropertyFromXmlPropertyString(string propertyXmlString)
     {
         int propertyEqualsCharIndex = propertyXmlString.IndexOf('=');

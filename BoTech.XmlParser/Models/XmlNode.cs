@@ -87,7 +87,7 @@ public class XmlNode
     public string GetDeclaredNamespaceIfExist()
     {
         if(InternalSerializerProperties.Count == 0) return "";
-        string? declaredNamespace = InternalSerializerProperties.FirstOrDefault(property => property.Name == "_nsp")?.Value;
+        string? declaredNamespace = InternalSerializerProperties.FirstOrDefault(property => property.GetNameOfThisPropertyInAXmlDocument() == "_nsp")?.Value;
         if(declaredNamespace == null) return "";
         return declaredNamespace;
     }

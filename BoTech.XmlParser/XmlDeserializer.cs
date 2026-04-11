@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using BoTech.XmlParser.Helper.Deserializer;
 using BoTech.XmlParser.Models;
 using BoTech.XmlParser.Models.Deserializer;
@@ -9,8 +7,9 @@ namespace BoTech.XmlParser;
 
 public class XmlDeserializer
 {
-    private SemiParsedNodeTypeResolver _nodeTypeResolver;
-    private SemiParsedNodeTypeValidator _nodeTypeValidator;
+    private SemiParsedNodeTypeResolver? _nodeTypeResolver;
+    private XmlNodeTypeValidator? _nodeTypeValidator;
+    private XmlNodePropertyValidator? _nodePropertyValidator;
     /// <summary>
     /// Deserialize any XML.
     /// </summary>
@@ -33,7 +32,8 @@ public class XmlDeserializer
     private void InitializeTypeHelper(Assembly callingAssembly)
     {
         _nodeTypeResolver = new SemiParsedNodeTypeResolver(callingAssembly);
-        _nodeTypeValidator = new SemiParsedNodeTypeValidator();
+        _nodeTypeValidator = new XmlNodeTypeValidator();
+        _nodePropertyValidator = new XmlNodePropertyValidator();
     }
     /// <summary>
     /// Checks the following:
@@ -45,8 +45,9 @@ public class XmlDeserializer
     /// <param name="node">The Main node.</param>
     private void CheckAndResolveNodesRecursive(XmlNode node)
     {
-        _nodeTypeResolver.TryToResolveNodeTypesAndStoreThemInXmlNodes(node);
-        _nodeTypeValidator.CheckNodeTypeForEmptyConstructors(node);
+        _nodeTypeResolver!.TryToResolveNodeTypesAndStoreThemInXmlNodes(node);
+        _nodeTypeValidator!.CheckNodeTypeForEmptyConstructors(node);
+        _nodePropertyValidator!.CheckIfDeclaredPropertiesAreValid(node);
         foreach (XmlNode childNode in node.Children) CheckAndResolveNodesRecursive(childNode);
     }
     /// <summary>

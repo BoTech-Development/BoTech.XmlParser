@@ -55,11 +55,11 @@ public class XmlNodeSerializer
         string propertyXml = "";
         foreach (XmlProperty property in currentNode.Properties)
         {
-            propertyXml += $" {property.ActualName}=\"{property.Value}\"";
+            propertyXml += $" {property.GetNameOfThisPropertyInAXmlDocument()}=\"{property.Value}\"";
         }
         foreach (XmlProperty property in currentNode.InternalSerializerProperties)
         {
-            propertyXml += $" {property.ActualName}=\"{property.Value}\"";
+            propertyXml += $" {property.GetNameOfThisPropertyInAXmlDocument()}=\"{property.Value}\"";
         }
         return propertyXml;
     }

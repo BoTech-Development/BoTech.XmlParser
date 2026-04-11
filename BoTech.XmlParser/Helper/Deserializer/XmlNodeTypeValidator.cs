@@ -4,7 +4,7 @@ using BoTech.XmlParser.Models;
 
 namespace BoTech.XmlParser.Helper.Deserializer;
 
-public class SemiParsedNodeTypeValidator
+public class XmlNodeTypeValidator
 {
     public void CheckNodeTypeForEmptyConstructors(XmlNode node)
     {
