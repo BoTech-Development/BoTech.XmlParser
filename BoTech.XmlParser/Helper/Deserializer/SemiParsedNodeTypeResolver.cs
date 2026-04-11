@@ -10,7 +10,7 @@ public class SemiParsedNodeTypeResolver
     {
         TypeResolver.CreateInstance(callingAssembly);
     }
-    public void TryToResolveNodeTypesAndStoreThemForSemiParsedNodes(XmlNode semiParsedNode)
+    public void TryToResolveNodeTypesAndStoreThemInXmlNodes(XmlNode semiParsedNode)
     {
         string nameOfNodeInAXmlDocument = semiParsedNode.GetNameOfThisNodeInAXmlDocument();
         if(nameOfNodeInAXmlDocument != "?xml" && !semiParsedNode.IsPropertyIdentifier)
@@ -19,7 +19,5 @@ public class SemiParsedNodeTypeResolver
                 nameOfNodeInAXmlDocument,
                 semiParsedNode.GetDeclaredNamespaceIfExist());
         }
-        foreach (XmlNode childNode in semiParsedNode.Children) 
-            TryToResolveNodeTypesAndStoreThemForSemiParsedNodes(childNode);
     }
 }

@@ -3,20 +3,20 @@ using BoTech.XmlParser.Models.Deserializer;
 
 namespace BoTech.XmlParser.Helper.Deserializer;
 
-public class GroupedXmlStringNodeParser
+public class GroupedXmlStringToXmlNodeConverter
 {
-    public XmlNode SemiParseGroupedXmlNodesToXmlNodes(GroupedXmlStringNode groupedXmlStringNode)
+    public XmlNode ConvertGroupedXmlNodesToXmlNodes(GroupedXmlStringNode groupedXmlStringNode)
     {
         XmlNode parentNode = XmlNode.CreateRootXmlNode();
-        SemiParseGroupedXmlNodesToXmlNodesRecursive(groupedXmlStringNode, parentNode);
+        ConvertGroupedXmlNodesToXmlNodesRecursive(groupedXmlStringNode, parentNode);
         return parentNode.Children[0]; // return not the ROOT node
     }
 
-    private void SemiParseGroupedXmlNodesToXmlNodesRecursive(GroupedXmlStringNode groupedXmlStringNodes,
+    private void ConvertGroupedXmlNodesToXmlNodesRecursive(GroupedXmlStringNode groupedXmlStringNodes,
         XmlNode parentNode)
     {
         XmlNode currentNode = ParseXmlPropertiesAnsXmlNameFromGroupedXmlString(groupedXmlStringNodes, parentNode);
-        foreach (GroupedXmlStringNode groupedXmlStringNode in groupedXmlStringNodes.Children) SemiParseGroupedXmlNodesToXmlNodesRecursive(groupedXmlStringNode, currentNode);
+        foreach (GroupedXmlStringNode groupedXmlStringNode in groupedXmlStringNodes.Children) ConvertGroupedXmlNodesToXmlNodesRecursive(groupedXmlStringNode, currentNode);
     }
     private XmlNode ParseXmlPropertiesAnsXmlNameFromGroupedXmlString(GroupedXmlStringNode groupedXmlStringNode, XmlNode parentNode)
     {

@@ -9,8 +9,10 @@ namespace BoTech.XmlParser;
 
 public class XmlDeserializer
 {
+    private SemiParsedNodeTypeResolver _nodeTypeResolver;
+    private SemiParsedNodeTypeValidator _nodeTypeValidator;
     /// <summary>
-    /// Deserialize any xml.
+    /// Deserialize any XML.
     /// </summary>
     /// <param name="xml"></param>
     /// <typeparam name="T"></typeparam>
@@ -19,15 +21,39 @@ public class XmlDeserializer
     {
         GroupedXmlStringNode masterParentNode = CreateInitialNestedXmlStructureFromSplitXml(
             SplitXmlStringByLessThanCharAndRemoveSpacesAndNewLineSymbols(xml));
-        XmlNode node = new GroupedXmlStringNodeParser().SemiParseGroupedXmlNodesToXmlNodes(masterParentNode);
-        new SemiParsedNodeTypeResolver(Assembly.GetCallingAssembly()).TryToResolveNodeTypesAndStoreThemForSemiParsedNodes(node);
+        XmlNode node = new GroupedXmlStringToXmlNodeConverter().ConvertGroupedXmlNodesToXmlNodes(masterParentNode);
+        InitializeTypeHelper(Assembly.GetCallingAssembly());
+        CheckAndResolveNodesRecursive(node);
         return default(T);
+    }
+    /// <summary>
+    /// Inits all helper objects.
+    /// </summary>
+    /// <param name="callingAssembly"></param>
+    private void InitializeTypeHelper(Assembly callingAssembly)
+    {
+        _nodeTypeResolver = new SemiParsedNodeTypeResolver(callingAssembly);
+        _nodeTypeValidator = new SemiParsedNodeTypeValidator();
+    }
+    /// <summary>
+    /// Checks the following:
+    ///  1. Each type is instantiable via an empty constructor.
+    ///  2. Each Property declared in the XmlNode is defined and settable in the referenced type.
+    /// Resolves the following:
+    ///  1. The referenced type for each XmlNode.
+    /// </summary>
+    /// <param name="node">The Main node.</param>
+    private void CheckAndResolveNodesRecursive(XmlNode node)
+    {
+        _nodeTypeResolver.TryToResolveNodeTypesAndStoreThemInXmlNodes(node);
+        _nodeTypeValidator.CheckNodeTypeForEmptyConstructors(node);
+        foreach (XmlNode childNode in node.Children) CheckAndResolveNodesRecursive(childNode);
     }
     /// <summary>
     /// Splits the string with the smaller than char and removes all spaces and the <c>\n</c> symbol.
     /// </summary>
     /// <param name="xml"></param>
-    /// <returns>An array which contains the trimmed / split strings-</returns>
+    /// <returns>An array that contains the trimmed / split strings-</returns>
     private string[] SplitXmlStringByLessThanCharAndRemoveSpacesAndNewLineSymbols(string xml)
     {
         string[] splittedXml = xml.Split("<");
