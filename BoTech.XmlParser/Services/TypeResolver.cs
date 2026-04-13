@@ -16,9 +16,12 @@ public class TypeResolver
         }
     }
     private readonly List<Type> _instantiableTypes;
+    private readonly List<Assembly> _referencedAssemblies;
     private TypeResolver(Assembly callingAssembly)
     {
-        _instantiableTypes = GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(callingAssembly);
+        _referencedAssemblies = GetReferencedAssembliesFromAssembly(callingAssembly);
+        _referencedAssemblies.Add(callingAssembly);
+        _instantiableTypes = GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(_referencedAssemblies);
     }
     /// <summary>
     /// Creates a new instance of the singleton
@@ -28,9 +31,19 @@ public class TypeResolver
     /// <summary>
     /// Resets the singleton (deletes the current Instance). Please use this method for releasing Memory.
     /// </summary>
-    public void Clear()
+    public static void Clear()
     {
         _instance = null;
+    }
+
+    public Type? GetTypeByNameFromReferencedAssemblies(string fullName)
+    {
+        Type? result = null;
+        foreach (Assembly referencedAssembly in _referencedAssemblies)
+        {
+             if((result = referencedAssembly.GetType(fullName)) != null) return result;
+        }
+        return null;
     }
     /// <summary>
     /// This Method check if another type in the calling Assembly or a referenced Assembly has the same XmlName, as the given Type.
@@ -90,21 +103,19 @@ public class TypeResolver
     }
     private bool HasTypeTheSameXmlDocumentName(Type type, string nameInXmlDocument)
     {
-        XmlName? definedXmlNameInType  = XmlNameEvaluator.GetXmlNameOrNullFromMemberInfo(type);
+        XmlName? definedXmlNameInType = XmlNameEvaluator.GetXmlNameOrNullFromMemberInfo(type);
         if(definedXmlNameInType != null && definedXmlNameInType.Name == nameInXmlDocument) return true;
         if(type.Name == nameInXmlDocument) return true;
         return false;
     }
     /// <summary>
-    /// Fetches all Instantiable types from the given Assembly and all Referenced Assemblies by this Assembly.
+    /// Fetches all Instantiable types from  all Referenced Assemblies by the calling Assembly.
     /// </summary>
-    /// <param name="assembly"></param>
+    /// <param name="referencedAssemblies"></param>
     /// <returns></returns>
-    private List<Type> GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(Assembly assembly)
+    private List<Type> GetAllInstantiableTypesFromAssemblyIncludingReferencedAssemblies(List<Assembly> referencedAssemblies)
     {
         List<Type> result = new List<Type>();
-        result.AddRange(assembly.GetExportedTypes());
-        List<Assembly> referencedAssemblies = GetReferencedAssembliesFromAssembly(assembly);//AppDomain.CurrentDomain.GetAssemblies().ToList();
         foreach (Assembly referencedAssembly in referencedAssemblies)
         {
             result.AddRange(referencedAssembly.GetExportedTypes());

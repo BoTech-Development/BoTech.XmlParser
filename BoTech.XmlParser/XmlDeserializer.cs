@@ -2,6 +2,7 @@
 using BoTech.XmlParser.Helper.Deserializer;
 using BoTech.XmlParser.Models;
 using BoTech.XmlParser.Models.Deserializer;
+using BoTech.XmlParser.Services;
 
 namespace BoTech.XmlParser;
 
@@ -23,6 +24,7 @@ public class XmlDeserializer
         XmlNode node = new GroupedXmlStringToXmlNodeConverter().ConvertGroupedXmlNodesToXmlNodes(masterParentNode);
         InitializeTypeHelper(Assembly.GetCallingAssembly());
         CheckAndResolveNodesRecursive(node);
+        TypeResolver.Clear();
         return default(T);
     }
     /// <summary>

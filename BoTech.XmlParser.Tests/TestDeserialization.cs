@@ -1,4 +1,5 @@
-﻿using BoTech.XmlParser.Tests.TestModels.Controls;
+﻿using BoTech.XmlParser.Services;
+using BoTech.XmlParser.Tests.TestModels.Controls;
 using NUnit.Framework;
 
 namespace BoTech.XmlParser.Tests;
@@ -17,5 +18,18 @@ public class TestDeserialization
     public void TestDeserialize()
     {
         BoForm _deserializedSampleForm = new XmlDeserializer().Deserialize<BoForm>(_sampleFormAsXml);
+    }
+    [Test]
+    public void TestGenericTypeParser()
+    {
+        TypeResolver.CreateInstance(typeof(TestDeserialization).Assembly);
+        // Dictionary<List<int>, List<string>>
+        GenericTypeInfo info = new GenericTypeParser().ParseGenericTypeFromXmlString(
+            "(_tId:1;_aTId:-1;_tn:Dictionary`2;_nsp:System.Collections.Generic)&" +
+            "(_tId:2;_aTId:1;_tn:List`1;_nsp:System.Collections.Generic)&" +
+            "(_tId:3;_aTId:2;_tn:Int32;_nsp:System)&" +
+            "(_tId:4;_aTId:1;_tn:List`1;_nsp:System.Collections.Generic)&" +
+            "(_tId:5;_aTId:4;_tn:String;_nsp:System)");
+        Console.WriteLine(info.ParseToString());
     }
 }

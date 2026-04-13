@@ -22,7 +22,7 @@ public class XmlNodeStructureGenerator
         XmlNode parentNode = XmlNode.CreateRootXmlNode();
         GenerateXmlNodeStructure(obj, parentNode);
         doc.Nodes.AddRange(parentNode.Children);
-        TypeResolver.Instance.Clear();
+        TypeResolver.Clear();
         return doc;
     }
 
@@ -44,7 +44,10 @@ public class XmlNodeStructureGenerator
         }
         Type type = obj.GetType();
         XmlNode node = XmlNode.CreateXmlNodeFromTypeAndProperty(type, XmlNameEvaluator.GetXmlNameOrActualName(type), parentProperty);
-        node.InternalSerializerProperties.AddRange(GenerateAdditionalGenericTypeHints(obj));
+        
+        XmlProperty? genericTypeHint = GenerateAdditionalGenericTypeHints(obj);
+        if(genericTypeHint != null)
+            node.InternalSerializerProperties.Add(genericTypeHint);
         if(IsTheNamespaceDeclarationNeededForTheXml(type))
             node.InternalSerializerProperties.Add(new XmlProperty("_nsp", "_nsp", type.Namespace));
         
@@ -102,12 +105,17 @@ public class XmlNodeStructureGenerator
         }
     }
 
-    private List<XmlProperty> GenerateAdditionalGenericTypeHints(object propertyValue)
+    private XmlProperty? GenerateAdditionalGenericTypeHints(object propertyValue)
     {
-        Type[] genericTypes =  propertyValue.GetType().GetGenericArguments();
+        if (!propertyValue.GetType().IsGenericType) return null;
+        string genericTypesString = new GenericTypeParser().ParseGenericTypeInfoFromGenericType(propertyValue.GetType())
+            .ParseToString();
+        return new XmlProperty("", "_gt", genericTypesString);
+        
+       /* Type[] genericTypes =  propertyValue.GetType().GetGenericArguments();
         List<XmlProperty> additionalGenericPropertyHints = new();
         for(int i = 0; i < genericTypes.Length; i++) additionalGenericPropertyHints.Add(new XmlProperty(  "",$"_gt-{i}", "_fn:" + genericTypes[i].FullName + "_asm:" + genericTypes[i].Assembly.FullName));
-        return additionalGenericPropertyHints;
+        return additionalGenericPropertyHints;*/
     }
     /// <summary>
     /// Adds each object stored in the given collection to the XmlNode tree.
