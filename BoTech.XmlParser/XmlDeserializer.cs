@@ -57,6 +57,8 @@ public class XmlDeserializer
         node.ReferencedType = _nodeGenericTypeGenerator!.GenerateGenericReferencedTypeFromXmlNode(node);
         node.Value = _nodeTypeActivator!.CreateInstanceAndPopulatePrimitivePropertiesForXmlNode(node);
         foreach (XmlNode childNode in node.Children) CheckResolveAndInstantiateNodesRecursive(childNode);
+        _nodeTypeActivator!.PopulateContentPropertiesForXmlNode(node);
+
     }
     /// <summary>
     /// Splits the string with the smaller than char and removes all spaces and the <c>\n</c> symbol.

@@ -71,16 +71,16 @@ public class XmlNodeStructureGenerator
     private void GenerateXmlNodesForAllProperties(Type type, XmlNode node, object obj)
     {
         PropertyInfo[] properties = type.GetProperties();
-        bool hasTypeMultipleObjectBasedPropertiesDefined = HasTypeMultipleObjectBasedPropertiesDefined(type);
+        bool hasTypeMultipleObjectBasedPropertiesDefined = TypeResolver.HasTypeMultipleObjectBasedPropertiesDefined(type);
         foreach (PropertyInfo property in properties)
         {
             object? propertyValue = property.GetValue(obj);
             if(propertyValue == null) continue;
-            if (IsTypePrimitive(property.PropertyType))
+            if (TypeResolver.IsTypePrimitive(property.PropertyType))
             {
                 AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
             }
-            else if (IsParsable(property.PropertyType)) // When the object implements IParsable.
+            else if (TypeResolver.IsParsable(property.PropertyType)) // When the object implements IParsable.
             {
                 string? parsedObject = propertyValue.ToString();
                 if(parsedObject != null)
@@ -90,7 +90,7 @@ public class XmlNodeStructureGenerator
             {
                 AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
             }
-            else if (IsTypeCollection(property.PropertyType))
+            else if (TypeResolver.IsTypeCollection(property.PropertyType))
             {
                 AddCollectionContentToXmlNode(node, propertyValue, property, hasTypeMultipleObjectBasedPropertiesDefined);
             }
@@ -162,47 +162,4 @@ public class XmlNodeStructureGenerator
     /// <param name="property">Will be used to determine the name of the property that should be displayed in xml.</param>
     /// <param name="propertyValue">The string value</param>
     private void AddPrimitiveXmlAttributeToNode(XmlNode node, PropertyInfo property, object propertyValue) => node.Properties.Add(new XmlProperty(property.PropertyType, property.Name, XmlNameEvaluator.GetXmlNameOrActualName(property),propertyValue.ToString()));
-    /// <summary>
-    /// Primitive or string
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    private bool IsTypePrimitive(Type type) =>  type.IsPrimitive || type == typeof(string);
-    /// <summary>
-    /// Method returns true, when the type is a collection, dictionary or an array. 
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    private bool IsTypeCollection(Type type)
-    {
-        Type[] interfaces = type.GetInterfaces();
-        return interfaces.Contains(typeof(IEnumerable<>)) || interfaces.Contains(typeof(ICollection<>)) ||
-               interfaces.Contains(typeof(IList<>)) || interfaces.Contains(typeof(IDictionary<,>)) ||
-               interfaces.Contains(typeof(IEnumerable)) || interfaces.Contains(typeof(ICollection)) ||
-               interfaces.Contains(typeof(IList)) || interfaces.Contains(typeof(IDictionary));
-    }
-    /// <summary>
-    /// Returns true when the type can be serialized with the to string method and parsed with the inbuilt parse method.
-    /// </summary>
-    /// <param name="type">The given type to check</param>
-    /// <returns></returns>
-    private bool IsParsable(Type type) => type.GetInterfaces().Any(i => i.FullName.Contains("System.IParsable"));
-    /// <summary>
-    /// Returns true when the object has multiple object based property types defined.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    private bool HasTypeMultipleObjectBasedPropertiesDefined(Type type)
-    {
-        bool foundOneObjectBasedType = false;
-        foreach (PropertyInfo propertyInfo in type.GetProperties())
-        {
-            if (!IsTypePrimitive(propertyInfo.PropertyType) && !propertyInfo.PropertyType.IsEnum)
-            {
-                if (foundOneObjectBasedType) return true;
-                foundOneObjectBasedType = true;
-            }
-        }
-        return false;
-    }
 }

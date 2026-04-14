@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using BoTech.XmlParser.Attributes;
 using BoTech.XmlParser.Helper.Serializer;
 
@@ -127,5 +128,48 @@ public class TypeResolver
             referencedAssemblies.Add(Assembly.Load(assemblyName))
         );
         return referencedAssemblies;
+    }
+    /// <summary>
+    /// Primitive or string
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool IsTypePrimitive(Type type) =>  type.IsPrimitive || type == typeof(string);
+    /// <summary>
+    /// Method returns true, when the type is a collection, dictionary or an array. 
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool IsTypeCollection(Type type)
+    {
+        Type[] interfaces = type.GetInterfaces();
+        return interfaces.Contains(typeof(IEnumerable<>)) || interfaces.Contains(typeof(ICollection<>)) ||
+               interfaces.Contains(typeof(IList<>)) || interfaces.Contains(typeof(IDictionary<,>)) ||
+               interfaces.Contains(typeof(IEnumerable)) || interfaces.Contains(typeof(ICollection)) ||
+               interfaces.Contains(typeof(IList)) || interfaces.Contains(typeof(IDictionary));
+    }
+    /// <summary>
+    /// Returns true when the type can be serialized with the to string method and parsed with the inbuilt parse method.
+    /// </summary>
+    /// <param name="type">The given type to check</param>
+    /// <returns></returns>
+    public static bool IsParsable(Type type) => type.GetInterfaces().Any(i => i.FullName.Contains("System.IParsable"));
+    /// <summary>
+    /// Returns true when the object has multiple object based property types defined.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool HasTypeMultipleObjectBasedPropertiesDefined(Type type)
+    {
+        bool foundOneObjectBasedType = false;
+        foreach (PropertyInfo propertyInfo in type.GetProperties())
+        {
+            if (!IsTypePrimitive(propertyInfo.PropertyType) && !propertyInfo.PropertyType.IsEnum)
+            {
+                if (foundOneObjectBasedType) return true;
+                foundOneObjectBasedType = true;
+            }
+        }
+        return false;
     }
 }
