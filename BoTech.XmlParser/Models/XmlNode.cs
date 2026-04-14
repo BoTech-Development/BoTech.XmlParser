@@ -40,6 +40,10 @@ public class XmlNode
     /// The corresponding type to this XmlNode
     /// </summary>
     public Type? ReferencedType { get; set; } = null;
+    /// <summary>
+    /// The referenced object to this XmlNode. This Property is set by the <see cref="XmlDeserializer"/>
+    /// </summary>
+    public object? Value { get; set; } = null;
 
     private XmlNode(string className, string xmlName, string nameOfParentClassAndProperty, Type? referencedType)
     {

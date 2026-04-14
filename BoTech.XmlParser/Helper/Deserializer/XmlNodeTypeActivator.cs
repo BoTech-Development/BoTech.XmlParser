@@ -4,8 +4,11 @@ namespace BoTech.XmlParser.Helper.Deserializer;
 
 public class XmlNodeTypeActivator
 {
-    public object CreateInstanceForXmlNode(XmlNode node)
+    public object? CreateInstanceForXmlNode(XmlNode node)
     {
-        return null;
+        if(node.ReferencedType != null) 
+            return Activator.CreateInstance(node.ReferencedType);
+        else
+            return null;
     }
 }
