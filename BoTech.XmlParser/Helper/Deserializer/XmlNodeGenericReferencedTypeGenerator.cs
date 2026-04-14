@@ -1,4 +1,6 @@
 ﻿using BoTech.XmlParser.Models;
+using BoTech.XmlParser.Models.Deserializer;
+using BoTech.XmlParser.Services;
 
 namespace BoTech.XmlParser.Helper.Deserializer;
 
@@ -6,18 +8,17 @@ public class XmlNodeGenericReferencedTypeGenerator
 {
     public Type? GenerateGenericReferencedTypeFromXmlNode(XmlNode node)
     {
-        XmlProperty genericTypeXmlProperty;
-        try
+        XmlProperty? genericTypeXmlProperty = null;
+        foreach (XmlProperty property in node.InternalSerializerProperties)
         {
-            genericTypeXmlProperty = node.InternalSerializerProperties.First(property =>
-                property.GetNameOfThisPropertyInAXmlDocument() == "_gt");
-            
+            if (property.GetNameOfThisPropertyInAXmlDocument() == "_gt")
+            {
+                genericTypeXmlProperty = property;
+            }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("Info: No Generic Type Property found.");
-        }
-        return node.ReferencedType;
-        
+        if (genericTypeXmlProperty == null || genericTypeXmlProperty.Value == null) return node.ReferencedType;
+        GenericTypeParser parser = new GenericTypeParser(); 
+        GenericTypeInfo info = parser.ParseGenericTypeFromXmlString(genericTypeXmlProperty.Value);
+        return info.InjectGenericTypeArgumentsFromTreeInGenericType(node.ReferencedType!);
     }
 }

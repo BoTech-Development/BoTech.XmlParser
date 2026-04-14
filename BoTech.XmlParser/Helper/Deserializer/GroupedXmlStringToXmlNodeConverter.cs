@@ -15,10 +15,10 @@ public class GroupedXmlStringToXmlNodeConverter
     private void ConvertGroupedXmlNodesToXmlNodesRecursive(GroupedXmlStringNode groupedXmlStringNodes,
         XmlNode parentNode)
     {
-        XmlNode currentNode = ParseXmlPropertiesAnsXmlNameFromGroupedXmlString(groupedXmlStringNodes, parentNode);
+        XmlNode currentNode = ParseXmlPropertiesAndXmlNameFromGroupedXmlString(groupedXmlStringNodes, parentNode);
         foreach (GroupedXmlStringNode groupedXmlStringNode in groupedXmlStringNodes.Children) ConvertGroupedXmlNodesToXmlNodesRecursive(groupedXmlStringNode, currentNode);
     }
-    private XmlNode ParseXmlPropertiesAnsXmlNameFromGroupedXmlString(GroupedXmlStringNode groupedXmlStringNode, XmlNode parentNode)
+    private XmlNode ParseXmlPropertiesAndXmlNameFromGroupedXmlString(GroupedXmlStringNode groupedXmlStringNode, XmlNode parentNode)
     {
         XmlNode currentNode;
         if (HasGroupedXmlStringPropertiesDefined(groupedXmlStringNode.GroupedXmlString))
@@ -90,7 +90,12 @@ public class GroupedXmlStringToXmlNodeConverter
         }
         return separatedProperties;
     }
-    private bool IsXmlPropertyAnInternalProperty(XmlProperty property) => property.GetNameOfThisPropertyInAXmlDocument() == "_nsp" || property.GetNameOfThisPropertyInAXmlDocument().Contains("_gt-");
+    private bool IsXmlPropertyAnInternalProperty(XmlProperty property)
+    {
+        string nameOfPropertyInXmlDocument = property.GetNameOfThisPropertyInAXmlDocument();
+        return nameOfPropertyInXmlDocument == "_nsp" || nameOfPropertyInXmlDocument == "_gt";
+    }
+
     private XmlProperty CreateXmlPropertyFromXmlPropertyString(string propertyXmlString)
     {
         int propertyEqualsCharIndex = propertyXmlString.IndexOf('=');

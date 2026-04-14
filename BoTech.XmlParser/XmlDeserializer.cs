@@ -11,6 +11,7 @@ public class XmlDeserializer
     private SemiParsedNodeTypeResolver? _nodeTypeResolver;
     private XmlNodeTypeValidator? _nodeTypeValidator;
     private XmlNodePropertyValidator? _nodePropertyValidator;
+    private XmlNodeGenericReferencedTypeGenerator? _nodeGenericTypeGenerator;
     /// <summary>
     /// Deserialize any XML.
     /// </summary>
@@ -36,6 +37,7 @@ public class XmlDeserializer
         _nodeTypeResolver = new SemiParsedNodeTypeResolver(callingAssembly);
         _nodeTypeValidator = new XmlNodeTypeValidator();
         _nodePropertyValidator = new XmlNodePropertyValidator();
+        _nodeGenericTypeGenerator = new XmlNodeGenericReferencedTypeGenerator();
     }
     /// <summary>
     /// Checks the following:
@@ -50,6 +52,7 @@ public class XmlDeserializer
         _nodeTypeResolver!.TryToResolveNodeTypesAndStoreThemInXmlNodes(node);
         _nodeTypeValidator!.CheckNodeTypeForEmptyConstructors(node);
         _nodePropertyValidator!.CheckIfDeclaredPropertiesAreValid(node);
+        node.ReferencedType = _nodeGenericTypeGenerator!.GenerateGenericReferencedTypeFromXmlNode(node);
         foreach (XmlNode childNode in node.Children) CheckResolveAndInstantiateNodesRecursive(childNode);
     }
     /// <summary>

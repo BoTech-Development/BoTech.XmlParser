@@ -6,9 +6,8 @@ public class GenericTypeParser
 {
     public GenericTypeInfo ParseGenericTypeFromXmlString(string xmlString)
     {
-        GenericTypeInfo mainNode = new GenericTypeInfo();
-        int currentDepth = 0;
-        string[] genericTypeDefinitions = xmlString.Split("&");
+        GenericTypeInfo? mainNode = null; // new GenericTypeInfo(-1, -1, null);
+        string[] genericTypeDefinitions = xmlString.Split(",");
         foreach (string genericTypeDefinition in genericTypeDefinitions)
         {
             Dictionary<string, string> parameters =
@@ -16,35 +15,36 @@ public class GenericTypeParser
             if (parameters.ContainsKey("_tId") && parameters.ContainsKey("_aTId") &&
                 parameters.ContainsKey("_tn") && parameters.ContainsKey("_nsp"))
             {
-                GenericTypeInfo newInfo = new GenericTypeInfo();
-                newInfo.ThisId = int.Parse(parameters["_tId"]);
-                newInfo.AssignedToId = int.Parse(parameters["_aTId"]);
-                newInfo.Type = TypeResolver.Instance.GetTypeByNameFromReferencedAssemblies(parameters["_nsp"] + "." + parameters["_tn"]);
-                mainNode.AddSubGenericTypeByAssignedId(newInfo);
+                GenericTypeInfo newInfo = new GenericTypeInfo(
+                    int.Parse(parameters["_tId"]),
+                    int.Parse(parameters["_aTId"]),
+                    TypeResolver.Instance.GetTypeByNameFromReferencedAssemblies(parameters["_nsp"] + "." + parameters["_tn"]));
+                if (mainNode == null) 
+                    mainNode = newInfo;
+                else
+                    mainNode.AddSubGenericTypeByAssignedId(newInfo);
             }
         }
-        return mainNode.SubGenericTypes[0];
+        return mainNode;
     }
 
     public GenericTypeInfo ParseGenericTypeInfoFromGenericType(Type type)
     {
-        return ParseGenericTypeInfoFromGenericTypeRecursive(type, 0, out _);
+        return ParseGenericTypeInfoFromGenericTypeRecursive(type, 1, out _);
     }
 
     private GenericTypeInfo ParseGenericTypeInfoFromGenericTypeRecursive(Type type, int currentId, out int nextId, GenericTypeInfo? parentInfo = null)
     {
-        GenericTypeInfo currentGenericType = new GenericTypeInfo()
-        {
-            Type = type,
-            ThisId = -1,
-            AssignedToId = -1
-        };
-        if(parentInfo != null)
+        GenericTypeInfo currentGenericType; 
+        if(parentInfo != null) // Its a sub node
         {
             currentId++;
             nextId = currentId;
-            currentGenericType.ThisId = currentId;
-            currentGenericType.AssignedToId = parentInfo.ThisId;
+            currentGenericType = new GenericTypeInfo(currentId, parentInfo.ThisId, type);
+        }
+        else // it's the root node
+        {
+            currentGenericType = new GenericTypeInfo(1, -1, type);
         }
         foreach (Type genericType in type.GetGenericArguments())
         {
