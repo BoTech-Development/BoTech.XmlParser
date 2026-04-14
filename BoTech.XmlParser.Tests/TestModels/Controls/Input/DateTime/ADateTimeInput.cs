@@ -4,9 +4,9 @@ namespace BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
 [XmlName("DateTimeInput")]
 public class ADateTimeInput : IInput<System.DateTime>
 {
-    public string Description { get; init; }
-    public string Name { get; init; }
-    public string Property { get; init; }
+    public string Description { get; set; }
+    public string Name { get; set; }
+    public string Property { get; set; }
     public System.DateTime Value { get; set; }
     public void Show()
     {

@@ -55,7 +55,7 @@ public class XmlDeserializer
         _nodeTypeValidator!.CheckNodeTypeForEmptyConstructors(node);
         _nodePropertyValidator!.CheckIfDeclaredPropertiesAreValid(node);
         node.ReferencedType = _nodeGenericTypeGenerator!.GenerateGenericReferencedTypeFromXmlNode(node);
-        node.Value = _nodeTypeActivator!.CreateInstanceForXmlNode(node);
+        node.Value = _nodeTypeActivator!.CreateInstanceAndPopulatePrimitivePropertiesForXmlNode(node);
         foreach (XmlNode childNode in node.Children) CheckResolveAndInstantiateNodesRecursive(childNode);
     }
     /// <summary>
