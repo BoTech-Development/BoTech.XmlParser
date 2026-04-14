@@ -96,4 +96,18 @@ public class XmlNode
     /// </summary>
     /// <returns>A string representation of this node.</returns>
     public string Serialize() => new XmlNodeSerializer().SerializeNodeAndChildren(this);
+
+    public override string ToString()
+    {
+        int currentCountOfSpaces = 0;
+        string result = ToStringBase(currentCountOfSpaces);
+        foreach (XmlNode child in Children)
+        {
+            result += "\n";
+            currentCountOfSpaces++;
+            result += child.ToStringBase(currentCountOfSpaces);
+        }
+        return result;
+    }
+    private string ToStringBase(int countOfSpaces) => new string(' ', countOfSpaces) + this.GetNameOfThisNodeInAXmlDocument() + "_" + ReferencedType?.FullName;
 }

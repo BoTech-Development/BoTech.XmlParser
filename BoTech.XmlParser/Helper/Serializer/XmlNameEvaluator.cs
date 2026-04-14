@@ -38,16 +38,9 @@ public static class XmlNameEvaluator
     }
     private static XmlName GetXmlNameFromMemberInfoOrPredefinedName(MemberInfo info, string predefinedActualName)
     {
-        try
-        {
-            // First function throws exception when not found.
-            return TryToGetXmlNameFromMemberInfo(info);
-        }
-        catch (Exception e)
-        {
-            XmlName nameDefinition = new XmlName(predefinedActualName);
-            return nameDefinition;
-        }
+        XmlName? nameDefinition = TryToGetXmlNameFromMemberInfo(info);
+        if(nameDefinition == null) nameDefinition = new XmlName(predefinedActualName);
+        return nameDefinition;
     }
 
     private static PropertyInfo? GetAnotherPropertyDefinedInTheTypeWithTheSameXmlName(XmlName currentXmlName,
@@ -56,29 +49,15 @@ public static class XmlNameEvaluator
         foreach (PropertyInfo propertyInfo in currentType.GetProperties())
         {
             if(propertyInfo.Name == currentProperty.Name) continue;
-            try
-            {
-                XmlName nameDefinition = TryToGetXmlNameFromMemberInfo(propertyInfo);
-                if(nameDefinition.Name == currentXmlName.Name) return propertyInfo;
-            }
-            catch (Exception e)
-            {
-                
-            }
+            XmlName? nameDefinition = TryToGetXmlNameFromMemberInfo(propertyInfo);
+            if(nameDefinition != null && nameDefinition.Name == currentXmlName.Name) return propertyInfo;
         }
         return null;
     }
 
     public static XmlName? GetXmlNameOrNullFromMemberInfo(MemberInfo info)
     {
-        try
-        {
-            return TryToGetXmlNameFromMemberInfo(info);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
+        return TryToGetXmlNameFromMemberInfo(info);
     }
     /// <summary>
     /// This Method tries to find the XmlName Attribute for a specific member.
@@ -86,10 +65,19 @@ public static class XmlNameEvaluator
     /// <param name="info">The Member</param>
     /// <returns>The XmlName.</returns>
     /// <exception cref="InvalidOperationException">Will be thrown when a XmlName is not defined for the given Member.</exception>
-    public static XmlName TryToGetXmlNameFromMemberInfo(MemberInfo info)
+    public static XmlName? TryToGetXmlNameFromMemberInfo(MemberInfo info)
     {
-        return (XmlName)info.GetCustomAttributes()
-            .First(attribute => attribute.GetType() == typeof(XmlName));
+        CustomAttributeData? data = null;
+        foreach (CustomAttributeData customAttributeData in info.CustomAttributes)
+        {
+            if(customAttributeData.AttributeType == typeof(XmlName)) data = customAttributeData;
+        }
+        if (data == null) return null; //throw new InvalidOperationException($"The XmlName Attribute is not defined for the given Member: {info.Name}.");
+        object? value = data.ConstructorArguments[0].Value;
+        if(value != null)
+            return new XmlName(value.ToString());
+        return null;
+        //throw new InvalidOperationException($"The XmlName Attribute is not defined for the given Member: {info.Name}.");
     }
 
 }

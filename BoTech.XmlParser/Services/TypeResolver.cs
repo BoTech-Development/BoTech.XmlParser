@@ -56,15 +56,8 @@ public class TypeResolver
         foreach (Type instantiableType in _instantiableTypes)
             if (instantiableType.Name != currentType.Name)
             {
-                try
-                {
-                    XmlName name = XmlNameEvaluator.TryToGetXmlNameFromMemberInfo(instantiableType);
-                    if (name.Name == xmlName.Name) return instantiableType;
-                }
-                catch (Exception e)
-                {
-                    //Console.WriteLine(e);
-                }
+                XmlName? name = XmlNameEvaluator.TryToGetXmlNameFromMemberInfo(instantiableType);
+                if (name != null && name.Name == xmlName.Name) return instantiableType;
             }
         return null;
     }
