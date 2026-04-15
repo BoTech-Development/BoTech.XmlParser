@@ -86,8 +86,15 @@ public class XmlNode
             nameOfParentClassAndProperty =  $"{parentPropertyInfo.DeclaringType.Name}.{parentPropertyInfo.Name}";
         return nameOfParentClassAndProperty;
     }
+    /// <summary>
+    /// returns the name of the current node in an xml document.
+    /// </summary>
+    /// <returns></returns>
     public string GetNameOfThisNodeInAXmlDocument() => XmlName == "" ? ClassName : XmlName;
-
+    /// <summary>
+    /// Gets the namespace of the current node if it is defined.
+    /// </summary>
+    /// <returns></returns>
     public string GetDeclaredNamespaceIfExist()
     {
         if(InternalSerializerProperties.Count == 0) return "";

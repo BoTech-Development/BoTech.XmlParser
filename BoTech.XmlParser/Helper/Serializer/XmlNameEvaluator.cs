@@ -54,7 +54,11 @@ public static class XmlNameEvaluator
         }
         return null;
     }
-
+    /// <summary>
+    /// This Method tries to find the XmlName Attribute for a specific member.
+    /// </summary>
+    /// <param name="info"></param>
+    /// <returns></returns>
     public static XmlName? GetXmlNameOrNullFromMemberInfo(MemberInfo info)
     {
         return TryToGetXmlNameFromMemberInfo(info);

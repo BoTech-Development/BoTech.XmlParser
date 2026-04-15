@@ -99,7 +99,6 @@ public class XmlNodeSerializer
         }
         return groupedNodesByParentClass;
     }
-
     /// <summary>
     /// Serializes the child nodes to XML, grouping them by a property identifier.
     /// </summary>
@@ -122,7 +121,6 @@ public class XmlNodeSerializer
         }
         return childrenXml;
     }
-
     /// <summary>
     /// Serializes the children of the given XmlNode without adding property identifiers.
     /// </summary>

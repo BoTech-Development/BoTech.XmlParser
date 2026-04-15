@@ -20,7 +20,8 @@ public class TestDeserialization
     [Test]
     public void TestDeserialize()
     {
-        BoForm _deserializedSampleForm = new XmlDeserializer().Deserialize<BoForm>(_sampleFormAsXml);
+        BoForm _deserializedSampleForm = (BoForm)new XmlDeserializer().Deserialize(_sampleFormAsXml);
+        
     }
     [Test]
     public void TestGenericTypeParser()

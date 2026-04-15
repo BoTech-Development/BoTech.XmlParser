@@ -4,7 +4,9 @@ using BoTech.XmlParser.Attributes;
 using BoTech.XmlParser.Helper.Serializer;
 
 namespace BoTech.XmlParser.Services;
-
+/// <summary>
+/// This class is a Singleton and can be use to find types that are defined in the calling Assembly or in a referenced Assembly.
+/// </summary>
 public class TypeResolver
 {
     private static TypeResolver? _instance = null;
@@ -36,7 +38,11 @@ public class TypeResolver
     {
         _instance = null;
     }
-
+    /// <summary>
+    /// This Method tries to find a type in the calling Assembly or in a referenced Assembly.
+    /// </summary>
+    /// <param name="fullName">The full type name.</param>
+    /// <returns>The type or null.</returns>
     public Type? GetTypeByNameFromReferencedAssemblies(string fullName)
     {
         Type? result = null;
@@ -47,7 +53,7 @@ public class TypeResolver
         return null;
     }
     /// <summary>
-    /// This Method check if another type in the calling Assembly or a referenced Assembly has the same XmlName, as the given Type.
+    /// This Method checks if another type in the calling Assembly or a referenced Assembly has the same XmlName, as the given Type.
     /// </summary>
     /// <param name="xmlName">The name of the given Type.</param>
     /// <param name="currentType"></param>
@@ -75,7 +81,13 @@ public class TypeResolver
                 return type;
         return null;
     }
-
+    /// <summary>
+    /// Tries to find a type by the given name and namespace in the calling Assembly or in a referenced Assembly.
+    /// </summary>
+    /// <param name="nameInXmlDocument">The XmlName</param>
+    /// <param name="namespaceInXmlDocument">If provided the namespace.</param>
+    /// <returns>The type that has been found.</returns>
+    /// <exception cref="ArgumentException">When the type could not be find.</exception>
     public Type TryToGetTypeByNameInXmlDocument(string nameInXmlDocument, string namespaceInXmlDocument)
     {
         foreach (var type in _instantiableTypes)
@@ -88,7 +100,12 @@ public class TypeResolver
         }
         throw new ArgumentException($"The Type with the name: {nameInXmlDocument} and the namespace: {namespaceInXmlDocument} was not found.");
     }
-
+    /// <summary>
+    /// Returns true when the given type has the same namespace as the given namespace in the xml document.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="namespaceInXmlDocument"></param>
+    /// <returns></returns>
     private bool HasTypeTheSameNamespace(Type type, string namespaceInXmlDocument)
     {
         if(namespaceInXmlDocument == "") return true;

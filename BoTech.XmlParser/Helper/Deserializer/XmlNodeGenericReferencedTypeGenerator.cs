@@ -6,6 +6,11 @@ namespace BoTech.XmlParser.Helper.Deserializer;
 
 public class XmlNodeGenericReferencedTypeGenerator
 {
+    /// <summary>
+    /// Generates the generic type of the XmlNode which is stored in the referencedType property.
+    /// </summary>
+    /// <param name="node"></param>
+    /// <returns>The new generic type</returns>
     public Type? GenerateGenericReferencedTypeFromXmlNode(XmlNode node)
     {
         XmlProperty? genericTypeXmlProperty = null;

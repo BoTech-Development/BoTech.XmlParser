@@ -4,10 +4,24 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.19-alpha</Version>
-        <AssemblyVersion>1.0.19.0</AssemblyVersion>
+        <Version>1.0.20-beta</Version>
+        <AssemblyVersion>1.0.20.0</AssemblyVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>BoTech.XmlParser</Title>
+        <Description>An Xml Serializer/Deserializer with support for Generics, Interfaces, Abstract Classes and polymorphism.</Description>
+        <PackageProjectUrl>https://www.botech.dev</PackageProjectUrl>
+        <PackageIcon>BoTectLogoSmall.drawio.png</PackageIcon>
+        <RepositoryUrl>https://github.com/BoTech-Development/BoTech.XmlParser</RepositoryUrl>
+        <PackageTags>Xml Serializer Deserializer</PackageTags>
+        <Copyright>© 2026 www.botech.dev All Rights Reserved!</Copyright>
+        <PackageReleaseNotes>See github: #1 to #23</PackageReleaseNotes>
     </PropertyGroup>
+
+    <ItemGroup>
+      <None Update="BoTectLogoSmall.drawio.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
 
 </Project>

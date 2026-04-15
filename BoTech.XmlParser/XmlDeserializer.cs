@@ -19,7 +19,7 @@ public class XmlDeserializer
     /// <param name="xml"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public T? Deserialize<T>(string xml) where T : new()
+    public object? Deserialize(string xml)
     {
         GroupedXmlStringNode masterParentNode = CreateInitialNestedXmlStructureFromSplitXml(
             SplitXmlStringByLessThanCharAndRemoveSpacesAndNewLineSymbols(xml));
@@ -27,7 +27,7 @@ public class XmlDeserializer
         InitializeTypeHelper(Assembly.GetCallingAssembly());
         CheckResolveAndInstantiateNodesRecursive(node);
         TypeResolver.Clear();
-        return default(T);
+        return node.Children[0].Value;
     }
     /// <summary>
     /// Inits all helper objects.

@@ -38,13 +38,6 @@ public class XmlNodeTypeActivator
                         addMethod.Invoke(collectionContent, new[] { contentInstance });
                     }
                     propertyInfo.SetValue(node.Value, collectionContent);
-                    //propertyInfo.SetValue(node.Value,Activator.CreateInstance(propertyInfo.PropertyType));
-                  /*  IEnumerable<object?> collectionContent = (IEnumerable<object?>)propertyInfo.GetValue(node.Value);
-                    foreach (object? contentInstance in GetAllInstancesForCollectionContentProperty(node, propertyInfo))
-                    {
-                        collectionContent = collectionContent.Append(contentInstance);
-                    }*/
-                        
                 }
                 else
                 {
@@ -58,12 +51,12 @@ public class XmlNodeTypeActivator
     private List<object?> GetAllInstancesForCollectionContentProperty(XmlNode nodeWhereTheContentPropertyIsDefined, PropertyInfo propertyInfo)
     {
         List<object?> result = new List<object?>();
-        if (nodeWhereTheContentPropertyIsDefined.Children.Exists(child => child.IsPropertyIdentifier))
+        if (DoesPropertyIndentifierExistsInChildrenOfXmlNode(nodeWhereTheContentPropertyIsDefined))
         {
             // Find content Node by Property Identifier
-            string propertyIdentifier = nodeWhereTheContentPropertyIsDefined.GetNameOfThisNodeInAXmlDocument() + "." + XmlNameEvaluator.GetXmlNameOrActualName(propertyInfo);
-            XmlNode? propertyIdentifierNode = nodeWhereTheContentPropertyIsDefined.Children.Find(child =>
-                child.IsPropertyIdentifier && child.NameOfParentClassAndProperty == propertyIdentifier);
+            XmlNode? propertyIdentifierNode =
+                FindPropertyIdentifierNodeInXmlNodeChildrenByPropertyInfo(nodeWhereTheContentPropertyIsDefined,
+                    propertyInfo);
             if (propertyIdentifierNode != null && propertyIdentifierNode.Children.Count > 1)
             {
                 foreach (XmlNode child in propertyIdentifierNode.Children) result.Add(child.Value);
@@ -78,12 +71,12 @@ public class XmlNodeTypeActivator
         PropertyInfo propertyInfo)
     {
         XmlNode? contentNode;
-        if (nodeWhereTheContentPropertyIsDefined.Children.Exists(child => child.IsPropertyIdentifier))
+        if (DoesPropertyIndentifierExistsInChildrenOfXmlNode(nodeWhereTheContentPropertyIsDefined))
         {
             // Find content Node by Property Identifier
-            string propertyIdentifier = nodeWhereTheContentPropertyIsDefined.GetNameOfThisNodeInAXmlDocument() + "." + XmlNameEvaluator.GetXmlNameOrActualName(propertyInfo);
-            XmlNode? propertyIdentifierNode = nodeWhereTheContentPropertyIsDefined.Children.Find(child =>
-                child.IsPropertyIdentifier && child.NameOfParentClassAndProperty == propertyIdentifier);
+            XmlNode? propertyIdentifierNode =
+                FindPropertyIdentifierNodeInXmlNodeChildrenByPropertyInfo(nodeWhereTheContentPropertyIsDefined,
+                    propertyInfo);
             if(propertyIdentifierNode != null && propertyIdentifierNode.Children.Count == 1)
                 return propertyIdentifierNode.Children.First().Value;
         }
@@ -93,7 +86,15 @@ public class XmlNodeTypeActivator
         }
         return null;
     }
-    
+
+    private XmlNode? FindPropertyIdentifierNodeInXmlNodeChildrenByPropertyInfo(XmlNode node, PropertyInfo propertyInfo)
+    {
+        string propertyIdentifier = node.GetNameOfThisNodeInAXmlDocument() + "." + XmlNameEvaluator.GetXmlNameOrActualName(propertyInfo);
+        return node.Children.Find(child =>
+            child.IsPropertyIdentifier && child.NameOfParentClassAndProperty == propertyIdentifier);
+    }
+    private bool DoesPropertyIndentifierExistsInChildrenOfXmlNode(XmlNode node) =>
+        node.Children.Exists(child => child.IsPropertyIdentifier);
     private void PopulatePrimitivePropertiesForXmlNode(XmlNode node, object instance)
     {
         List<PropertyInfo> propertiesDefinedInTypeInNode = instance.GetType().GetProperties().ToList();

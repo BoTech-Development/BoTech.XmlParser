@@ -10,6 +10,10 @@ public class SemiParsedNodeTypeResolver
     {
         TypeResolver.CreateInstance(callingAssembly);
     }
+    /// <summary>
+    /// Tries to resolve the Type of the given XmlNode and inserts it into the XmlNode.
+    /// </summary>
+    /// <param name="semiParsedNode"></param>
     public void TryToResolveNodeTypesAndStoreThemInXmlNodes(XmlNode semiParsedNode)
     {
         string nameOfNodeInAXmlDocument = semiParsedNode.GetNameOfThisNodeInAXmlDocument();

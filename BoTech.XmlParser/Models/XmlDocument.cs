@@ -3,7 +3,10 @@
 public class XmlDocument
 {
     public List<XmlNode> Nodes { get; set; } = new();
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public string GenerateXmlString()
     {
         string result = "";

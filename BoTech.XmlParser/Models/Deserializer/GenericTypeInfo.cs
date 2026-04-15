@@ -11,7 +11,6 @@ public class GenericTypeInfo(int thisId, int assignedToId, Type type)
     /// The ID of the node that this GenericType where this GenericType is stored in the <see cref="SubGenericTypes"/> list.    
     /// </summary>
     public int AssignedToId { get; init; } = assignedToId;
-
     /// <summary>
     /// When the User defines a generic type in the xml string, the Type argument is set here. <br/>
     /// For example: User defined type: <c>List&lt;string&gt;</c>, This Property is set to <c>typeof(string)</c>
@@ -36,7 +35,11 @@ public class GenericTypeInfo(int thisId, int assignedToId, Type type)
         }
         return thisAsString;
     }
-
+    /// <summary>
+    /// Adds a sub generic type by using the TypeId and the AssignedToId.
+    /// </summary>
+    /// <param name="subGenericType">The sub node to add.</param>
+    /// <returns>True when it works.</returns>
     public bool AddSubGenericTypeByAssignedId(GenericTypeInfo subGenericType)
     {
         if (subGenericType.AssignedToId == -1 || ThisId == subGenericType.AssignedToId)
@@ -54,7 +57,17 @@ public class GenericTypeInfo(int thisId, int assignedToId, Type type)
             return false;
         }
     }
+    /// <summary>
+    /// When this node is the most parent node in the tree, this method returns true.
+    /// </summary>
+    /// <returns></returns>
     public bool IsThisNodeMostParent() => ThisId == 1 && AssignedToId == -1;
+    /// <summary>
+    /// Applies the node structure to the <see cref="genericType"/> argument and returns the new generic <see cref="Type"/>.
+    /// </summary>
+    /// <param name="genericType">The Type that has no generic type arguments defined.</param>
+    /// <returns>The new Type which has all generic arguments defined.</returns>
+    /// <exception cref="InvalidOperationException">Occurs when you try to invoke this method on a sub node.</exception>
     public Type InjectGenericTypeArgumentsFromTreeInGenericType(Type genericType)
     {
         if (IsThisNodeMostParent())
@@ -69,7 +82,12 @@ public class GenericTypeInfo(int thisId, int assignedToId, Type type)
         }
         throw new InvalidOperationException("You can only call this method on the root node.");
     }
-
+    /// <summary>
+    /// Internal method that makes the generic type argument from the sub nodes.
+    /// </summary>
+    /// <returns>
+    /// The new Type
+    /// </returns>
     private Type MakeGenericTypeArgumentFromSubNodesOrReturnThisType()
     {
         if (SubGenericTypes.Count > 0)

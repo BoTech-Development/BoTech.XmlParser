@@ -7,7 +7,6 @@ namespace BoTech.XmlParser.Helper.Serializer;
 
 public class XmlNodeStructureGenerator
 {
-    private List<Type> _visitedTypes = new List<Type>();
     /// <summary>
     /// Creates the <see cref="XmlDocument"/> XmlNode structure.
     /// </summary>
@@ -17,7 +16,6 @@ public class XmlNodeStructureGenerator
     public XmlDocument GenerateXmlStructure<T>(T obj, Assembly callingAssembly)
     {
         TypeResolver.CreateInstance(callingAssembly);
-        _visitedTypes.Clear();
         XmlDocument doc = new XmlDocument();
         XmlNode parentNode = XmlNode.CreateRootXmlNode();
         GenerateXmlNodeStructure(obj, parentNode);

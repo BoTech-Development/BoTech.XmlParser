@@ -7,11 +7,24 @@ namespace BoTech.XmlParser.Helper.Deserializer;
 
 public class XmlNodePropertyValidator
 {
+    /// <summary>
+    /// Validates if all properties in the XmlNode are declared in the ReferencedType.
+    /// </summary>
+    /// <param name="node">
+    /// The node to check it for.
+    /// </param>
     public void CheckIfDeclaredPropertiesAreValid(XmlNode node)
     {
         if(node.ReferencedType != null)
             CheckIfAllPropertiesAreDeclaredInType(node.ReferencedType, node.Properties);
     }
+    /// <summary>
+    /// Checks if all properties in the XmlProperties are declared in the given Type.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="xmlProperties"></param>
+    /// <exception cref="XmlMissingPropertyDeclarationException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     private void CheckIfAllPropertiesAreDeclaredInType(Type type, List<XmlProperty> xmlProperties)
     {
         List<PropertyInfo> propertiesDeclaredInType = type.GetProperties().ToList();
@@ -26,7 +39,12 @@ public class XmlNodePropertyValidator
                 throw new ArgumentException($"The property: '{xmlProperty.GetNameOfThisPropertyInAXmlDocument()}' in the type {type.FullName} is not writable.");
         }
     }
-
+    /// <summary>
+    /// Returns the PropertyInfo from the XmlProperty and the properties declared in the type.
+    /// </summary>
+    /// <param name="xmlProperty"></param>
+    /// <param name="propertiesDeclaredInType"></param>
+    /// <returns></returns>
     public static PropertyInfo? GetPropertyInfoFromXmlPropertyAndDeclaredProperties(XmlProperty xmlProperty,
         List<PropertyInfo> propertiesDeclaredInType)
     {

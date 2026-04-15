@@ -32,5 +32,9 @@ public class XmlProperty
         XmlName = xmlName;
         Value = value;
     }
+    /// <summary>
+    /// Gets the actual name.
+    /// </summary>
+    /// <returns></returns>
     public string GetNameOfThisPropertyInAXmlDocument() => XmlName == "" ? PropertyName : XmlName;
 }
