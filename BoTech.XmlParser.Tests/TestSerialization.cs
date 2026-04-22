@@ -1,5 +1,4 @@
-﻿using BoTech.XmlParser.Tests.TestModels;
-using BoTech.XmlParser.Tests.TestModels.Controls;
+﻿using BoTech.XmlParser.Tests.TestModels.Controls;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input.DateTime;
 using BoTech.XmlParser.Tests.TestModels.Controls.Input.Numeric;

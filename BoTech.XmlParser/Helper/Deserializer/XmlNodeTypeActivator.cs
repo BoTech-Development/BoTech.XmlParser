@@ -23,6 +23,8 @@ public class XmlNodeTypeActivator
         List<PropertyInfo> propertiesDefinedInTypeInNode = node.ReferencedType.GetProperties().ToList();
         foreach (PropertyInfo propertyInfo in propertiesDefinedInTypeInNode)
         {
+            if (!(propertyInfo.CanRead && propertyInfo.CanWrite && propertyInfo.GetGetMethod() != null && propertyInfo.GetSetMethod() != null))
+                continue;
             if (!TypeResolver.IsTypePrimitive(propertyInfo.PropertyType) && !propertyInfo.PropertyType.IsEnum)
             {
                 if (TypeResolver.IsTypeCollection(propertyInfo.PropertyType))
@@ -103,8 +105,8 @@ public class XmlNodeTypeActivator
             PropertyInfo? propertyInfo = XmlNodePropertyValidator.GetPropertyInfoFromXmlPropertyAndDeclaredProperties(xmlProperty, propertiesDefinedInTypeInNode);
             if(propertyInfo == null) 
                 throw new ArgumentException($"The property: {xmlProperty.GetNameOfThisPropertyInAXmlDocument()} is not defined in the type: {node.ReferencedType?.FullName}.");
-            
-            propertyInfo.SetValue(instance, TypeConverter.ConvertObjectToSpecificType(xmlProperty.Value, propertyInfo.PropertyType));
+            if (propertyInfo.CanRead && propertyInfo.CanWrite && propertyInfo.GetGetMethod() != null && propertyInfo.GetSetMethod() != null)
+                propertyInfo.SetValue(instance, TypeConverter.ConvertObjectToSpecificType(xmlProperty.Value, propertyInfo.PropertyType));
         }
     }
     private object? CreateInstanceForXmlNode(XmlNode node)

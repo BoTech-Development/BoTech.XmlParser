@@ -72,34 +72,37 @@ public class XmlNodeStructureGenerator
         bool hasTypeMultipleObjectBasedPropertiesDefined = TypeResolver.HasTypeMultipleObjectBasedPropertiesDefined(type);
         foreach (PropertyInfo property in properties)
         {
-            object? propertyValue = property.GetValue(obj);
-            if(propertyValue == null) continue;
-            if (TypeResolver.IsTypePrimitive(property.PropertyType))
+            if (property.CanRead && property.CanWrite && property.GetGetMethod() != null && property.GetSetMethod() != null)
             {
-                AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
+                object? propertyValue = property.GetValue(obj);
+                if (propertyValue == null) continue;
+                if (TypeResolver.IsTypePrimitive(property.PropertyType))
+                {
+                    AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
+                }
+                else if (TypeResolver.IsParsable(property.PropertyType)) // When the object implements IParsable.
+                {
+                    string? parsedObject = propertyValue.ToString();
+                    if (parsedObject != null)
+                        AddPrimitiveXmlAttributeToNode(node, property, parsedObject);
+                }
+                else if (property.PropertyType.IsEnum)
+                {
+                    AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
+                }
+                else if (TypeResolver.IsTypeCollection(property.PropertyType))
+                {
+                    AddCollectionContentToXmlNode(node, propertyValue, property,
+                        hasTypeMultipleObjectBasedPropertiesDefined);
+                }
+                else //if(property.PropertyType.IsGenericType || propertyValue.GetType().IsGenericType) // User defined generic type
+                {
+                    if (hasTypeMultipleObjectBasedPropertiesDefined)
+                        GenerateXmlNodeStructure(propertyValue, node, property);
+                    else
+                        GenerateXmlNodeStructure(propertyValue, node, null);
+                }
             }
-            else if (TypeResolver.IsParsable(property.PropertyType)) // When the object implements IParsable.
-            {
-                string? parsedObject = propertyValue.ToString();
-                if(parsedObject != null)
-                    AddPrimitiveXmlAttributeToNode(node, property, parsedObject);
-            }
-            else if (property.PropertyType.IsEnum)
-            {
-                AddPrimitiveXmlAttributeToNode(node, property, propertyValue);
-            }
-            else if (TypeResolver.IsTypeCollection(property.PropertyType))
-            {
-                AddCollectionContentToXmlNode(node, propertyValue, property, hasTypeMultipleObjectBasedPropertiesDefined);
-            }
-            else //if(property.PropertyType.IsGenericType || propertyValue.GetType().IsGenericType) // User defined generic type
-            {
-                if(hasTypeMultipleObjectBasedPropertiesDefined)
-                    GenerateXmlNodeStructure(propertyValue, node, property);
-                else
-                    GenerateXmlNodeStructure(propertyValue, node, null);
-            }
-          
         }
     }
 

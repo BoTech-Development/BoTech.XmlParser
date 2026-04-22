@@ -1,9 +1,6 @@
-﻿using BoTech.XmlParser.Helper.Serializer;
-using BoTech.XmlParser.Models.Deserializer;
+﻿using BoTech.XmlParser.Models.Deserializer;
 using BoTech.XmlParser.Services;
 using BoTech.XmlParser.Tests.TestModels.Controls;
-using BoTech.XmlParser.Tests.TestModels.Models.Import;
-using NUnit.Framework;
 
 namespace BoTech.XmlParser.Tests;
 
@@ -21,7 +18,7 @@ public class TestDeserialization
     public void TestDeserialize()
     {
         BoForm _deserializedSampleForm = (BoForm)new XmlDeserializer().Deserialize(_sampleFormAsXml);
-        
+        Console.WriteLine(_deserializedSampleForm.FormContent.ToString());
     }
     [Test]
     public void TestGenericTypeParser()
